@@ -98,6 +98,62 @@ enum OutboundEmailStatus {
   CANCELLED
 }
 
+enum ResearchStatus {
+  DRAFT
+  COMPLETE
+  FAILED
+  ARCHIVED
+}
+
+enum BriefingType {
+  DAILY
+  MEETING
+  TRAVEL
+  WEEKLY
+  CUSTOM
+}
+
+enum TravelStatus {
+  DRAFT
+  CONFIRMED
+  ACTIVE
+  COMPLETE
+  CANCELLED
+}
+
+enum ExpenseStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  REIMBURSED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  DUE
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum EventPlanStatus {
+  DRAFT
+  PLANNING
+  CONFIRMED
+  COMPLETE
+  CANCELLED
+}
+
+enum AutomationRunStatus {
+  PENDING
+  WAITING_APPROVAL
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
 model User {
   id                 String              @id @default(cuid())
   email              String              @unique
@@ -215,6 +271,16 @@ model Organization {
   mailboxConnections MailboxConnection[]
   outboundEmails     OutboundEmail[]
   oauthStates        OAuthState[]
+  memoryItems        MemoryItem[]
+  documentFolders    DocumentFolder[]
+  researchReports    ResearchReport[]
+  briefings          Briefing[]
+  travelPlans        TravelPlan[]
+  expenseReports     ExpenseReport[]
+  expenses           Expense[]
+  invoices           Invoice[]
+  vendors            Vendor[]
+  eventPlans         EventPlan[]
 }
 
 model Membership {
@@ -241,6 +307,7 @@ model Executive {
   preferences    ExecutivePreference[]
   meetings       Meeting[]
   calendarEvents CalendarEvent[]
+  TravelPlan     TravelPlan[]
 
   @@index([organizationId])
 }
@@ -417,30 +484,43 @@ model Project {
 }
 
 model Task {
-  id             String       @id @default(cuid())
+  id             String           @id @default(cuid())
   organizationId String
   projectId      String?
   ownerId        String?
   contactId      String?
   title          String
   notes          String?
-  status         TaskStatus   @default(TODO)
-  priority       Priority     @default(NORMAL)
+  status         TaskStatus       @default(TODO)
+  priority       Priority         @default(NORMAL)
   dueAt          DateTime?
   sourceType     String?
   sourceId       String?
-  tagsJson       String       @default("[]")
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  tagsJson       String           @default("[]")
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   completedAt    DateTime?
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  project        Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  owner          User?        @relation("TaskOwner", fields: [ownerId], references: [id], onDelete: SetNull)
-  contact        Contact?     @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project        Project?         @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  owner          User?            @relation("TaskOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  contact        Contact?         @relation(fields: [contactId], references: [id], onDelete: SetNull)
   followUps      FollowUp[]
+  attachments    TaskAttachment[]
 
   @@index([organizationId, status, dueAt])
   @@index([organizationId, ownerId])
+}
+
+model TaskAttachment {
+  id         String   @id @default(cuid())
+  taskId     String
+  documentId String
+  createdAt  DateTime @default(now())
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, documentId])
+  @@index([documentId])
 }
 
 model Meeting {
@@ -530,22 +610,51 @@ model CalendarEvent {
 }
 
 model Document {
-  id             String         @id @default(cuid())
-  organizationId String
-  projectId      String?
-  name           String
-  mimeType       String
-  storageKey     String
-  sizeBytes      Int
-  status         DocumentStatus @default(PROCESSING)
-  extractedText  String?
-  tagsJson       String         @default("[]")
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  project        Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  id              String           @id @default(cuid())
+  organizationId  String
+  projectId       String?
+  name            String
+  mimeType        String
+  storageKey      String
+  sizeBytes       Int
+  status          DocumentStatus   @default(PROCESSING)
+  extractedText   String?
+  tagsJson        String           @default("[]")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  folderId        String?
+  parentId        String?
+  versionNumber   Int              @default(1)
+  summary         String?
+  organization    Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project         Project?         @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  folder          DocumentFolder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  parent          Document?        @relation("DocumentVersions", fields: [parentId], references: [id], onDelete: SetNull)
+  versions        Document[]       @relation("DocumentVersions")
+  taskAttachments TaskAttachment[]
+  travelDocuments TravelDocument[]
+  expenseReceipts Expense[]        @relation("ExpenseReceipt")
+  vendorContracts VendorContract[]
 
   @@index([organizationId, status])
+  @@index([organizationId, folderId])
+  @@index([parentId, versionNumber])
+}
+
+model DocumentFolder {
+  id             String           @id @default(cuid())
+  organizationId String
+  name           String
+  parentId       String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  parent         DocumentFolder?  @relation("FolderTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children       DocumentFolder[] @relation("FolderTree")
+  documents      Document[]
+
+  @@unique([organizationId, parentId, name])
+  @@index([organizationId, name])
 }
 
 model Email {
@@ -698,8 +807,410 @@ model Automation {
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
   organization     Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  runs             AutomationRun[]
 
   @@index([organizationId, status])
+}
+
+model AutomationRun {
+  id              String              @id @default(cuid())
+  automationId    String
+  status          AutomationRunStatus @default(PENDING)
+  triggerDataJson String              @default("{}")
+  stepsJson       String              @default("[]")
+  resultJson      String?
+  error           String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime            @default(now())
+  automation      Automation          @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@index([automationId, status, createdAt])
+}
+
+model MemoryItem {
+  id             String       @id @default(cuid())
+  organizationId String
+  category       String
+  title          String
+  content        String
+  sourceType     String?
+  sourceId       String?
+  confirmed      Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, category, confirmed])
+  @@index([organizationId, updatedAt])
+}
+
+model ResearchReport {
+  id             String         @id @default(cuid())
+  organizationId String
+  topic          String
+  subjectType    String
+  question       String?
+  summary        String?
+  findingsJson   String         @default("[]")
+  sourcesJson    String         @default("[]")
+  status         ResearchStatus @default(DRAFT)
+  createdById    String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status, updatedAt])
+}
+
+model Briefing {
+  id             String       @id @default(cuid())
+  organizationId String
+  type           BriefingType
+  title          String
+  periodStart    DateTime?
+  periodEnd      DateTime?
+  contentJson    String
+  sourceIdsJson  String       @default("[]")
+  confirmed      Boolean      @default(false)
+  createdById    String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, type, createdAt])
+}
+
+model TravelPlan {
+  id             String                @id @default(cuid())
+  organizationId String
+  executiveId    String?
+  title          String
+  destination    String
+  startsAt       DateTime
+  endsAt         DateTime
+  timezone       String
+  status         TravelStatus          @default(DRAFT)
+  purpose        String?
+  notes          String?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  executive      Executive?            @relation(fields: [executiveId], references: [id], onDelete: SetNull)
+  flights        Flight[]
+  hotels         HotelStay[]
+  transports     GroundTransport[]
+  documents      TravelDocument[]
+  itinerary      TravelItineraryItem[]
+  reminders      TravelReminder[]
+  events         EventPlan[]
+
+  @@index([organizationId, startsAt])
+  @@index([organizationId, status])
+}
+
+model TravelItineraryItem {
+  id           String     @id @default(cuid())
+  travelPlanId String
+  title        String
+  kind         String     @default("meeting")
+  startsAt     DateTime
+  endsAt       DateTime?
+  location     String?
+  notes        String?
+  travelPlan   TravelPlan @relation(fields: [travelPlanId], references: [id], onDelete: Cascade)
+
+  @@index([travelPlanId, startsAt])
+}
+
+model TravelReminder {
+  id           String     @id @default(cuid())
+  travelPlanId String
+  title        String
+  remindAt     DateTime
+  completed    Boolean    @default(false)
+  travelPlan   TravelPlan @relation(fields: [travelPlanId], references: [id], onDelete: Cascade)
+
+  @@index([travelPlanId, remindAt])
+}
+
+model Flight {
+  id               String     @id @default(cuid())
+  travelPlanId     String
+  airline          String
+  flightNumber     String
+  departureAirport String
+  arrivalAirport   String
+  departsAt        DateTime
+  arrivesAt        DateTime
+  confirmationCode String?
+  cabin            String?
+  notes            String?
+  travelPlan       TravelPlan @relation(fields: [travelPlanId], references: [id], onDelete: Cascade)
+
+  @@index([travelPlanId, departsAt])
+}
+
+model HotelStay {
+  id               String     @id @default(cuid())
+  travelPlanId     String
+  hotelName        String
+  address          String?
+  checksInAt       DateTime
+  checksOutAt      DateTime
+  confirmationCode String?
+  phone            String?
+  notes            String?
+  travelPlan       TravelPlan @relation(fields: [travelPlanId], references: [id], onDelete: Cascade)
+
+  @@index([travelPlanId, checksInAt])
+}
+
+model GroundTransport {
+  id               String     @id @default(cuid())
+  travelPlanId     String
+  type             String
+  provider         String?
+  pickupAt         DateTime
+  pickupLocation   String
+  dropoffLocation  String?
+  confirmationCode String?
+  notes            String?
+  travelPlan       TravelPlan @relation(fields: [travelPlanId], references: [id], onDelete: Cascade)
+
+  @@index([travelPlanId, pickupAt])
+}
+
+model TravelDocument {
+  id           String     @id @default(cuid())
+  travelPlanId String
+  documentId   String
+  kind         String
+  expiresAt    DateTime?
+  travelPlan   TravelPlan @relation(fields: [travelPlanId], references: [id], onDelete: Cascade)
+  document     Document   @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([travelPlanId, documentId])
+}
+
+model ExpenseReport {
+  id             String        @id @default(cuid())
+  organizationId String
+  title          String
+  periodStart    DateTime?
+  periodEnd      DateTime?
+  currency       String        @default("USD")
+  status         ExpenseStatus @default(DRAFT)
+  submittedAt    DateTime?
+  approvedAt     DateTime?
+  reimbursedAt   DateTime?
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  expenses       Expense[]
+
+  @@index([organizationId, status, createdAt])
+}
+
+model Expense {
+  id             String         @id @default(cuid())
+  organizationId String
+  reportId       String?
+  vendorId       String?
+  receiptId      String?
+  description    String
+  category       String
+  amountMinor    Int
+  currency       String         @default("USD")
+  incurredAt     DateTime
+  status         ExpenseStatus  @default(DRAFT)
+  reimbursable   Boolean        @default(true)
+  extractedJson  String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  report         ExpenseReport? @relation(fields: [reportId], references: [id], onDelete: SetNull)
+  vendor         Vendor?        @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+  receipt        Document?      @relation("ExpenseReceipt", fields: [receiptId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status, incurredAt])
+  @@index([reportId])
+}
+
+model Invoice {
+  id             String        @id @default(cuid())
+  organizationId String
+  vendorId       String?
+  invoiceNumber  String
+  description    String?
+  amountMinor    Int
+  currency       String        @default("USD")
+  issuedAt       DateTime?
+  dueAt          DateTime?
+  paidAt         DateTime?
+  status         InvoiceStatus @default(DRAFT)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  vendor         Vendor?       @relation(fields: [vendorId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, invoiceNumber])
+  @@index([organizationId, status, dueAt])
+}
+
+model Vendor {
+  id             String           @id @default(cuid())
+  organizationId String
+  name           String
+  category       String?
+  email          String?
+  phone          String?
+  website        String?
+  status         String           @default("active")
+  renewalAt      DateTime?
+  notes          String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  contacts       VendorContact[]
+  quotes         VendorQuote[]
+  contracts      VendorContract[]
+  payments       VendorPayment[]
+  expenses       Expense[]
+  invoices       Invoice[]
+  events         EventVendor[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId, status, renewalAt])
+}
+
+model VendorContact {
+  id       String  @id @default(cuid())
+  vendorId String
+  name     String
+  email    String?
+  phone    String?
+  role     String?
+  vendor   Vendor  @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+}
+
+model VendorQuote {
+  id          String    @id @default(cuid())
+  vendorId    String
+  title       String
+  amountMinor Int?
+  currency    String    @default("USD")
+  validUntil  DateTime?
+  status      String    @default("received")
+  notes       String?
+  createdAt   DateTime  @default(now())
+  vendor      Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId, status])
+}
+
+model VendorContract {
+  id         String    @id @default(cuid())
+  vendorId   String
+  documentId String?
+  title      String
+  startsAt   DateTime?
+  endsAt     DateTime?
+  renewalAt  DateTime?
+  status     String    @default("active")
+  notes      String?
+  vendor     Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  document   Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([vendorId, renewalAt])
+}
+
+model VendorPayment {
+  id          String    @id @default(cuid())
+  vendorId    String
+  description String
+  amountMinor Int
+  currency    String    @default("USD")
+  dueAt       DateTime?
+  paidAt      DateTime?
+  status      String    @default("due")
+  createdAt   DateTime  @default(now())
+  vendor      Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId, status, dueAt])
+}
+
+model EventPlan {
+  id                 String              @id @default(cuid())
+  organizationId     String
+  title              String
+  description        String?
+  venue              String?
+  startsAt           DateTime
+  endsAt             DateTime
+  timezone           String
+  status             EventPlanStatus     @default(DRAFT)
+  budgetMinor        Int?
+  currency           String              @default("USD")
+  travelPlanId       String?
+  cateringNotes      String?
+  accommodationNotes String?
+  notes              String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  organization       Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  guests             EventGuest[]
+  vendors            EventVendor[]
+  schedule           EventScheduleItem[]
+  travelPlan         TravelPlan?         @relation(fields: [travelPlanId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, startsAt])
+  @@index([organizationId, status])
+  @@index([travelPlanId])
+}
+
+model EventGuest {
+  id        String    @id @default(cuid())
+  eventId   String
+  name      String
+  email     String?
+  rsvp      String    @default("pending")
+  plusOnes  Int       @default(0)
+  notes     String?
+  invitedAt DateTime?
+  event     EventPlan @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId, rsvp])
+}
+
+model EventVendor {
+  id          String    @id @default(cuid())
+  eventId     String
+  vendorId    String
+  purpose     String
+  status      String    @default("proposed")
+  amountMinor Int?
+  event       EventPlan @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  vendor      Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, vendorId, purpose])
+}
+
+model EventScheduleItem {
+  id       String    @id @default(cuid())
+  eventId  String
+  title    String
+  startsAt DateTime
+  endsAt   DateTime?
+  location String?
+  owner    String?
+  notes    String?
+  event    EventPlan @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId, startsAt])
 }
 
 model ActivityLog {

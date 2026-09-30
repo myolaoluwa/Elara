@@ -5,7 +5,7 @@ describe("getTextAIProvider", () => {
   it.each([
     ["openai", "OPENAI_API_KEY", "gpt-5-mini"],
     ["openrouter", "OPENROUTER_API_KEY", "openai/gpt-4o-mini"],
-    ["gemini", "GEMINI_API_KEY", "gemini-2.5-flash"],
+    ["gemini", "GEMINI_API_KEY", "gemini-3.8-flash"],
     ["cerebras", "CEREBRAS_API_KEY", "gpt-oss-120b"],
     ["xai", "XAI_API_KEY", "grok-4"],
     ["deepseek", "DEEPSEEK_API_KEY", "deepseek-chat"],

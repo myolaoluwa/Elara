@@ -25,7 +25,7 @@ const compatibleProviders = {
   gemini: {
     key: "GEMINI_API_KEY",
     model: "GEMINI_MODEL",
-    defaultModel: "gemini-2.5-flash",
+    defaultModel: "gemini-3.8-flash",
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
   },
   cerebras: {

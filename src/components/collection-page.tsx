@@ -36,6 +36,7 @@ export function CollectionPage({
   emptyTitle,
   emptyBody,
   allowResolve = false,
+  apiBase = "/api/operations",
 }: {
   eyebrow: string;
   title: string;
@@ -47,6 +48,7 @@ export function CollectionPage({
   emptyTitle: string;
   emptyBody: string;
   allowResolve?: boolean;
+  apiBase?: string;
 }) {
   const router = useRouter();
   const [records, setRecords] = useState(initialRecords);
@@ -62,7 +64,7 @@ export function CollectionPage({
     const data = new FormData(form);
     const body = Object.fromEntries(fields.map((field) => [field.name, field.type === "checkbox" ? data.get(field.name) === "on" : data.get(field.name)]));
     try {
-      const response = await fetch(`/api/operations/${resource}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+      const response = await fetch(`${apiBase}/${resource}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
       const payload = await response.json();
       if (!response.ok) {
         setError(payload.error || "Unable to save this record");
@@ -80,7 +82,7 @@ export function CollectionPage({
 
   async function resolve(id: string) {
     try {
-      const response = await fetch(`/api/operations/${resource}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) });
+      const response = await fetch(`${apiBase}/${resource}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) });
       if (!response.ok) throw new Error("Update failed");
       setRecords((current) => current.map((record) => record.id === id ? { ...record, resolved: true, badge: "Resolved" } : record));
     } catch {
