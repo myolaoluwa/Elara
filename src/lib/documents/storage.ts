@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 
@@ -17,4 +17,12 @@ export async function readDocument(storageKey: string) {
   const resolved = path.resolve(storageRoot, storageKey);
   if (!resolved.startsWith(`${path.resolve(storageRoot)}${path.sep}`)) throw new Error("Invalid storage key");
   return readFile(resolved);
+}
+
+export async function removeDocument(storageKey: string) {
+  const resolved = path.resolve(storageRoot, storageKey);
+  if (!resolved.startsWith(`${path.resolve(storageRoot)}${path.sep}`)) throw new Error("Invalid storage key");
+  await unlink(resolved).catch((error: NodeJS.ErrnoException) => {
+    if (error.code !== "ENOENT") throw error;
+  });
 }

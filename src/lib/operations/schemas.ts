@@ -28,7 +28,7 @@ export const meetingSchema = z.object({
   endsAt: z.iso.datetime({ local: true }),
   location: optionalText(300),
   agenda: optionalText(5000),
-  attendees: optionalText(2000),
+  attendees: optionalText(2000).refine((value) => !value || value.split(",").filter((item) => item.trim()).length <= 50, "Use no more than 50 attendees"),
 }).refine((value) => new Date(value.endsAt) > new Date(value.startsAt), {
   message: "End time must be after start time",
   path: ["endsAt"],

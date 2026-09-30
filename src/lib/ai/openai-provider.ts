@@ -7,17 +7,17 @@ export class OpenAIProvider implements StreamingAIProvider {
   private readonly client: OpenAI;
 
   constructor(apiKey: string, model = process.env.OPENAI_MODEL || "gpt-5-mini") {
-    this.client = new OpenAI({ apiKey });
+    this.client = new OpenAI({ apiKey, timeout: 45_000, maxRetries: 1 });
     this.model = model;
   }
 
   async complete(request: AIRequest): Promise<AIResponse> {
-    const response = await this.client.responses.create({ model: this.model, input: transcript(request.messages) });
+    const response = await this.client.responses.create({ model: this.model, input: transcript(request.messages), max_output_tokens: 2_000 });
     return { text: response.output_text, provider: this.name, model: this.model, toolCalls: [] };
   }
 
   async *stream(messages: AIMessage[], instructions: string) {
-    const stream = await this.client.responses.create({ model: this.model, instructions, input: transcript(messages), stream: true });
+    const stream = await this.client.responses.create({ model: this.model, instructions, input: transcript(messages), max_output_tokens: 2_000, stream: true });
     for await (const event of stream) if (event.type === "response.output_text.delta") yield event.delta;
   }
 

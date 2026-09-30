@@ -39,42 +39,48 @@ export function TaskBoard({ initialTasks }: { initialTasks: TaskItem[] }) {
     setError(null);
     const form = event.currentTarget;
     const data = new FormData(form);
-    const response = await fetch("/api/tasks", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        title: data.get("title"),
-        notes: data.get("notes") || null,
-        dueAt: data.get("dueAt") || null,
-        priority: data.get("priority"),
-      }),
-    });
-    const payload = await response.json();
-    if (!response.ok) {
-      setError(payload.error || "Unable to create task");
+    try {
+      const response = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          title: data.get("title"),
+          notes: data.get("notes") || null,
+          dueAt: data.get("dueAt") || null,
+          priority: data.get("priority"),
+        }),
+      });
+      const payload = await response.json();
+      if (!response.ok) {
+        setError(payload.error || "Unable to create task");
+        return;
+      }
+      setTasks((current) => [payload.task, ...current]);
+      setComposerOpen(false);
+      form.reset();
+      router.refresh();
+    } catch {
+      setError("Unable to reach Elara. Check your connection and try again.");
+    } finally {
       setPending(false);
-      return;
     }
-    setTasks((current) => [payload.task, ...current]);
-    setPending(false);
-    setComposerOpen(false);
-    form.reset();
-    router.refresh();
   }
 
   async function setStatus(taskId: string, status: TaskStatus) {
     const previous = tasks;
     setTasks((current) => current.map((task) => task.id === taskId ? { ...task, status } : task));
-    const response = await fetch(`/api/tasks/${taskId}`, {
-      method: "PATCH",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    if (!response.ok) {
+    try {
+      const response = await fetch(`/api/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!response.ok) throw new Error("Task update failed");
+      router.refresh();
+    } catch {
       setTasks(previous);
       setError("That update could not be saved.");
     }
-    router.refresh();
   }
 
   const openCount = tasks.filter((task) => !["DONE", "CANCELLED"].includes(task.status)).length;

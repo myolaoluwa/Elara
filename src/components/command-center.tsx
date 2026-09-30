@@ -16,22 +16,23 @@ export function CommandCenter({ initialConversationId = null, initialMessages = 
     setPending(true);
     const userMessage: Message = { role: "user", content: prompt.trim() };
     setMessages((current) => [...current, userMessage, { role: "assistant", content: "" }]);
-    const response = await fetch("/api/ai/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt, conversationId }) });
-    if (!response.ok || !response.body) {
+    try {
+      const response = await fetch("/api/ai/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt, conversationId }) });
+      if (!response.ok || !response.body) throw new Error("AI request failed");
+      setConversationId(response.headers.get("x-conversation-id"));
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const delta = decoder.decode(value, { stream: true });
+        setMessages((current) => current.map((message, index) => index === current.length - 1 ? { ...message, content: message.content + delta } : message));
+      }
+    } catch {
       setMessages((current) => [...current.slice(0, -1), { role: "assistant", content: "I couldn’t process that request." }]);
+    } finally {
       setPending(false);
-      return;
     }
-    setConversationId(response.headers.get("x-conversation-id"));
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      const delta = decoder.decode(value, { stream: true });
-      setMessages((current) => current.map((message, index) => index === current.length - 1 ? { ...message, content: message.content + delta } : message));
-    }
-    setPending(false);
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {

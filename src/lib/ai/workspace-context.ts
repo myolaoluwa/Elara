@@ -15,7 +15,27 @@ export async function buildWorkspaceContext(organizationId: string) {
     prisma.commitment.findMany({ where: { organizationId }, select: { description: true, dueAt: true, status: true, confirmed: true, contact: { select: { name: true } } }, take: 50 }),
   ]);
 
-  return { generatedAt: now.toISOString(), tasks, events, meetings, followUps, contacts, emails, documents, projects, decisions, commitments };
+  return {
+    generatedAt: now.toISOString(),
+    tasks,
+    events,
+    meetings: meetings.map((meeting) => ({
+      ...meeting,
+      agenda: clip(meeting.agenda, 2_000),
+      notes: meeting.notes.map((note) => ({ ...note, content: clip(note.content, 4_000) || "" })),
+    })),
+    followUps: followUps.map((item) => ({ ...item, notes: clip(item.notes, 1_000) })),
+    contacts: contacts.map((contact) => ({ ...contact, notes: clip(contact.notes, 1_000) })),
+    emails: emails.map((email) => ({ ...email, bodyText: clip(email.bodyText, 4_000) })),
+    documents: documents.map((document) => ({ ...document, extractedText: clip(document.extractedText, 4_000) })),
+    projects: projects.map((project) => ({ ...project, description: clip(project.description, 2_000) })),
+    decisions: decisions.map((decision) => ({ ...decision, rationale: clip(decision.rationale, 2_000) })),
+    commitments,
+  };
+}
+
+function clip(value: string | null, maxLength: number) {
+  return value && value.length > maxLength ? `${value.slice(0, maxLength)}…` : value;
 }
 
 export type WorkspaceContextSnapshot = Awaited<ReturnType<typeof buildWorkspaceContext>>;

@@ -25,7 +25,7 @@ Recorded-audio transcription currently uses OpenAI specifically and requires `OP
 
 ## Transactional email
 
-Elara's environment contract is prepared for Brevo's transactional Email API. In `.env`, set `BREVO_API_KEY` to an API v3 key and set `BREVO_SENDER_EMAIL` to a sender address whose email or domain has been verified in Brevo. `BREVO_SENDER_NAME` defaults to `Elara`; `BREVO_REPLY_TO_EMAIL` and the three template ID variables are optional. Keep the API key server-side and configure the same variables in the hosting environment before enabling verification, password-reset, or invitation delivery.
+Elara's environment contract is prepared for Brevo's transactional Email API. In `.env`, set `BREVO_API_KEY` to an API v3 key and set `BREVO_SENDER_EMAIL` to a sender address whose email or domain has been verified in Brevo. `BREVO_SENDER_NAME` defaults to `Elara`, and `BREVO_REPLY_TO_EMAIL` is optional. The template ID variables are reserved for future custom templates and are not currently consumed. Keep the API key server-side and configure the same variables in the hosting environment before enabling verification or password-reset delivery.
 
 ## Checks
 
@@ -53,3 +53,4 @@ npm run build
 - AI never sends email, cancels meetings, or performs other high-impact external actions. Drafts and extracted meeting actions require user review.
 
 See `docs/mvp.md` for the acceptance checklist and deployment gaps.
+See `docs/security.md` for implemented safeguards and production security requirements.

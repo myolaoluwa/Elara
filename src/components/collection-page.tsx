@@ -61,23 +61,31 @@ export function CollectionPage({
     const form = event.currentTarget;
     const data = new FormData(form);
     const body = Object.fromEntries(fields.map((field) => [field.name, field.type === "checkbox" ? data.get(field.name) === "on" : data.get(field.name)]));
-    const response = await fetch(`/api/operations/${resource}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
-    const payload = await response.json();
-    if (!response.ok) {
-      setError(payload.error || "Unable to save this record");
+    try {
+      const response = await fetch(`/api/operations/${resource}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+      const payload = await response.json();
+      if (!response.ok) {
+        setError(payload.error || "Unable to save this record");
+        return;
+      }
+      setOpen(false);
+      form.reset();
+      router.refresh();
+    } catch {
+      setError("Unable to reach Elara. Check your connection and try again.");
+    } finally {
       setPending(false);
-      return;
     }
-    setPending(false);
-    setOpen(false);
-    form.reset();
-    router.refresh();
   }
 
   async function resolve(id: string) {
-    const response = await fetch(`/api/operations/${resource}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) });
-    if (response.ok) setRecords((current) => current.map((record) => record.id === id ? { ...record, resolved: true, badge: "Resolved" } : record));
-    else setError("Unable to update this record.");
+    try {
+      const response = await fetch(`/api/operations/${resource}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ id }) });
+      if (!response.ok) throw new Error("Update failed");
+      setRecords((current) => current.map((record) => record.id === id ? { ...record, resolved: true, badge: "Resolved" } : record));
+    } catch {
+      setError("Unable to update this record.");
+    }
   }
 
   return (

@@ -10,28 +10,43 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const isSignUp = mode === "sign-up";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
     setError(null);
-    const data = new FormData(event.currentTarget);
-    const email = String(data.get("email"));
-    const password = String(data.get("password"));
+    setNotice(null);
+    try {
+      const data = new FormData(event.currentTarget);
+      const email = String(data.get("email"));
+      const password = String(data.get("password"));
 
-    const result = isSignUp
-      ? await authClient.signUp.email({ name: String(data.get("name")), email, password })
-      : await authClient.signIn.email({ email, password });
+      const result = isSignUp
+        ? await authClient.signUp.email({ name: String(data.get("name")), email, password })
+        : await authClient.signIn.email({ email, password });
 
-    if (result.error) {
-      setError(result.error.message || "Authentication failed. Please try again.");
+      if (result.error) {
+        setError(result.error.message || "Authentication failed. Please try again.");
+        return;
+      }
+
+      if (isSignUp) {
+        const session = await authClient.getSession();
+        if (!session.data) {
+          setNotice("Check your inbox to verify your email before signing in.");
+          return;
+        }
+      }
+
+      router.push("/");
+      router.refresh();
+    } catch {
+      setError("Unable to reach Elara. Check your connection and try again.");
+    } finally {
       setPending(false);
-      return;
     }
-
-    router.push("/");
-    router.refresh();
   }
 
   return (
@@ -55,6 +70,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
           <label>Email address<input name="email" required type="email" autoComplete="email" placeholder="you@company.com" /></label>
           <label>Password<input name="password" required type="password" autoComplete={isSignUp ? "new-password" : "current-password"} minLength={10} placeholder="At least 10 characters" /></label>
           {error && <p className="form-error" role="alert">{error}</p>}
+          {notice && <p className="settings-message" role="status">{notice}</p>}
           <button className="auth-submit" disabled={pending} type="submit">
             {pending ? <LoaderCircle className="spin" size={17} /> : <>{isSignUp ? "Create workspace" : "Sign in"}<ArrowRight size={16} /></>}
           </button>

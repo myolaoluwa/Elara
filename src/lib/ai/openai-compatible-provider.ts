@@ -22,6 +22,8 @@ export class OpenAICompatibleProvider implements StreamingAIProvider {
       apiKey: options.apiKey,
       baseURL: options.baseURL,
       defaultHeaders: options.defaultHeaders,
+      timeout: 45_000,
+      maxRetries: 1,
     });
   }
 
@@ -29,6 +31,7 @@ export class OpenAICompatibleProvider implements StreamingAIProvider {
     const response = await this.client.chat.completions.create({
       model: this.model,
       messages: compatibleMessages(request.messages),
+      max_tokens: 2_000,
     });
 
     return {
@@ -46,6 +49,7 @@ export class OpenAICompatibleProvider implements StreamingAIProvider {
     const stream = await this.client.chat.completions.create({
       model: this.model,
       messages: compatibleMessages([{ role: "system", content: instructions }, ...messages]),
+      max_tokens: 2_000,
       stream: true,
     });
 

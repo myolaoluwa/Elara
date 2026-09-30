@@ -26,8 +26,8 @@
 
 These are environment and infrastructure concerns rather than simulated local product workflows:
 
-1. PostgreSQL and encrypted object storage for production.
-2. Transactional email for verification and password reset.
+1. Managed PostgreSQL and private encrypted object storage for production. SQLite and local uploads are development-only and are not durable on serverless hosts such as Vercel.
+2. A verified Brevo sender and API key for email verification and password reset delivery.
 3. Google/Microsoft OAuth credentials for live email and calendar synchronization.
-4. Production secret management, TLS, backups, monitoring, and retention policies.
+4. Production secret management, TLS, backups, monitoring, shared/distributed rate limiting, and retention policies.
 5. A key for OpenAI, OpenRouter, Gemini, Cerebras, xAI/Grok, or DeepSeek if hosted text generation is desired. Audio transcription specifically requires an OpenAI key.
