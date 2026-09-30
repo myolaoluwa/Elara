@@ -32,7 +32,7 @@ AI capabilities use three permission levels:
 
 ## Post-MVP priorities
 
-1. Replace SQLite/local files with PostgreSQL and encrypted object storage.
+1. Keep PostgreSQL migrations production-safe and replace local document files with encrypted object storage.
 2. Add Google and Microsoft provider adapters with least-privilege OAuth scopes.
 3. Add transactional email verification, password reset, invitations, and richer membership administration.
 4. Add background jobs for synchronization, document extraction, briefings, and reminders.

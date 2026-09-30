@@ -121,6 +121,11 @@ kbd { padding: 2px 6px; color: #8a928e; background: #fff; border: 1px solid #dfe
 .auth-submit:disabled, .primary-button:disabled { opacity: .65; cursor: wait; }
 .auth-switch { margin: 21px 0 0; color: #818a86; text-align: center; font-size: 11px; }
 .auth-switch a { color: var(--green); font-weight: 700; text-decoration: none; }
+.auth-notice { margin: 0 0 13px; padding: 10px 12px; color: var(--green-dark); background: var(--green-pale); border-radius: 8px; font-size: 11px; line-height: 1.45; }
+.auth-back, .auth-resend { color: var(--green); background: transparent; border: 0; cursor: pointer; font-size: 11px; font-weight: 700; }
+.auth-back { display: flex; align-items: center; gap: 5px; margin: 0 0 24px; padding: 0; }
+.auth-resend { width: 100%; margin-top: 15px; }
+.auth-back:disabled, .auth-resend:disabled { opacity: .55; cursor: wait; }
 .form-error { margin: 0 0 13px; padding: 10px 12px; color: #833e39; background: #f7e9e7; border-radius: 8px; font-size: 11px; line-height: 1.4; }
 .spin { animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -294,6 +299,43 @@ kbd { padding: 2px 6px; color: #8a928e; background: #fff; border: 1px solid #dfe
 .attention-dot { width: 7px; height: 7px; border-radius: 50%; background: #6f8d80; }
 .attention-dot.critical { background: #b14e47; }
 .attention-dot.warning, .attention-dot.high { background: #c88a36; }
+.settings-stack { display: grid; gap: 14px; }
+.mailbox-settings { padding: 24px; display: grid; gap: 15px; }
+.mailbox-settings p, .email-composer header p, .group-manager header p { color: var(--muted); font-size: 10px; line-height: 1.6; }
+.mailbox-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: #f7f9f7; }
+.mailbox-row strong, .mailbox-row span { display: block; }
+.mailbox-row span { margin-top: 4px; color: var(--muted); font-size: 9px; }
+.mailbox-actions, .compose-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.mailbox-actions button, .compose-actions button, .mailbox-connect { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 11px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; font-size: 10px; text-decoration: none; }
+.mailbox-connect { width: fit-content; }
+.group-manager, .email-composer { margin-bottom: 17px; padding: 22px; }
+.group-manager > header, .email-composer > header { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+.group-manager h2, .email-composer h2, .mailbox-settings h2 { margin: 5px 0; font-family: var(--font-display), serif; font-size: 24px; font-weight: 400; }
+.group-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(250px, .8fr); gap: 18px; }
+.group-manager form, .email-composer form { display: grid; gap: 11px; }
+.group-manager label, .email-composer label { display: grid; gap: 6px; color: #53605a; font-size: 10px; font-weight: 650; }
+.group-manager input, .email-composer input, .email-composer select, .email-composer textarea { width: 100%; padding: 10px 12px; color: var(--ink); background: white; border: 1px solid #dfe5e1; border-radius: 8px; outline: none; font: inherit; }
+.group-manager fieldset { max-height: 230px; overflow: auto; border: 1px solid var(--line); border-radius: 9px; padding: 10px; }
+.group-manager legend { padding: 0 5px; color: var(--muted); font-size: 9px; }
+.group-manager .check-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; padding: 6px; }
+.group-manager .check-row input { width: auto; }
+.group-manager .check-row span { color: var(--muted); font-size: 9px; font-weight: 400; }
+.group-list { display: grid; align-content: start; gap: 8px; }
+.group-list article { padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: #f7f9f7; }
+.group-list article p, .group-list article span { margin-top: 4px; color: var(--muted); font-size: 9px; }
+.compose-actions { justify-content: flex-end; }
+.outbound-list { margin-bottom: 17px; overflow: hidden; }
+.outbound-list > header { display: flex; align-items: center; justify-content: space-between; padding: 19px 22px; border-bottom: 1px solid var(--line); }
+.outbound-list h2 { margin: 4px 0 0; font-family: var(--font-display), serif; font-size: 22px; font-weight: 400; }
+.outbound-list article { display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 13px 22px; border-bottom: 1px solid var(--line); }
+.outbound-list article:last-child { border-bottom: 0; }
+.outbound-list article strong { display: block; font-size: 11px; }
+.outbound-list article p { display: flex; align-items: center; gap: 4px; margin: 4px 0 0; color: var(--muted); font-size: 9px; }
+.outbound-list article > button { width: 30px; height: 30px; display: grid; place-items: center; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 7px; cursor: pointer; }
+.outbound-status { width: fit-content; padding: 4px 7px; color: var(--muted); background: #eef1ef; border-radius: 999px; font-size: 8px; font-weight: 750; text-transform: uppercase; }
+.outbound-status.sent { color: #286348; background: #e5f2eb; }
+.outbound-status.failed { color: #9c4842; background: #f7e9e7; }
+.outbound-status.scheduled { color: #745a25; background: #f6efd9; }
 
 @media (max-width: 1000px) {
   .sidebar { transform: translateX(-100%); transition: transform .22s ease; }
@@ -346,6 +388,10 @@ kbd { padding: 2px 6px; color: #8a928e; background: #fff; border: 1px solid #dfe
   .task-toolbar { align-items: flex-start; flex-direction: column; padding: 13px; gap: 9px; }
   .task-row { grid-template-columns: 28px 1fr; padding: 15px; }
   .status-select { grid-column: 2; justify-self: start; }
+  .mailbox-row { align-items: flex-start; flex-direction: column; }
+  .group-grid { grid-template-columns: 1fr; }
+  .group-manager .check-row { grid-template-columns: auto 1fr; }
+  .group-manager .check-row span { grid-column: 2; }
 }
 
 @media (max-width: 420px) {

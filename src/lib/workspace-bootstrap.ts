@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { personalWorkspaceSlug } from "@/lib/workspace-identity";
 
 export async function ensureWorkspaceForUser(userId: string, userName: string) {
   const existing = await prisma.membership.findFirst({
@@ -17,15 +18,17 @@ export async function ensureWorkspaceForUser(userId: string, userName: string) {
     });
     if (raced) return raced;
 
-    const organization = await transaction.organization.create({
-      data: {
-        name: `${userName.trim() || "My"}’s workspace`,
-        slug: `workspace-${userId}`,
-      },
+    const slug = personalWorkspaceSlug(userId);
+    const organization = await transaction.organization.upsert({
+      where: { slug },
+      update: {},
+      create: { name: `${userName.trim() || "My"}’s workspace`, slug },
     });
 
-    const membership = await transaction.membership.create({
-      data: { userId, organizationId: organization.id, role: "OWNER" },
+    const membership = await transaction.membership.upsert({
+      where: { userId_organizationId: { userId, organizationId: organization.id } },
+      update: {},
+      create: { userId, organizationId: organization.id, role: "OWNER" },
       include: { organization: true },
     });
 

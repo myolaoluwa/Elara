@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -79,21 +79,58 @@ enum DocumentStatus {
   ARCHIVED
 }
 
+enum MailboxProvider {
+  GMAIL
+}
+
+enum MailboxStatus {
+  ACTIVE
+  REAUTH_REQUIRED
+  DISCONNECTED
+}
+
+enum OutboundEmailStatus {
+  DRAFT
+  SCHEDULED
+  SENDING
+  SENT
+  FAILED
+  CANCELLED
+}
+
 model User {
-  id            String        @id @default(cuid())
-  email         String        @unique
-  emailVerified Boolean       @default(false)
-  name          String
-  image         String?
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  memberships   Membership[]
-  profile       UserProfile?
-  taskOwners    Task[]        @relation("TaskOwner")
-  activities    ActivityLog[]
-  approvals     AIAction[]    @relation("ActionApprover")
-  sessions      Session[]
-  accounts      Account[]
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  emailVerified      Boolean             @default(false)
+  name               String
+  image              String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  twoFactorEnabled   Boolean             @default(false)
+  memberships        Membership[]
+  profile            UserProfile?
+  taskOwners         Task[]              @relation("TaskOwner")
+  activities         ActivityLog[]
+  approvals          AIAction[]          @relation("ActionApprover")
+  sessions           Session[]
+  accounts           Account[]
+  twoFactors         TwoFactor[]
+  mailboxConnections MailboxConnection[]
+  outboundEmails     OutboundEmail[]     @relation("OutboundEmailCreator")
+  oauthStates        OAuthState[]
+}
+
+model TwoFactor {
+  id                      String    @id @default(cuid())
+  userId                  String
+  secret                  String
+  backupCodes             String
+  verified                Boolean   @default(true)
+  failedVerificationCount Int       @default(0)
+  lockedUntil             DateTime?
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Session {
@@ -151,29 +188,33 @@ model UserProfile {
 }
 
 model Organization {
-  id             String           @id @default(cuid())
-  name           String
-  slug           String           @unique
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  memberships    Membership[]
-  executives     Executive[]
-  contacts       Contact[]
-  companies      Company[]
-  projects       Project[]
-  tasks          Task[]
-  meetings       Meeting[]
-  calendarEvents CalendarEvent[]
-  documents      Document[]
-  emails         Email[]
-  followUps      FollowUp[]
-  decisions      Decision[]
-  commitments    Commitment[]
-  conversations  AIConversation[]
-  aiActions      AIAction[]
-  notifications  Notification[]
-  automations    Automation[]
-  activityLogs   ActivityLog[]
+  id                 String              @id @default(cuid())
+  name               String
+  slug               String              @unique
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  memberships        Membership[]
+  executives         Executive[]
+  contacts           Contact[]
+  companies          Company[]
+  projects           Project[]
+  tasks              Task[]
+  meetings           Meeting[]
+  calendarEvents     CalendarEvent[]
+  documents          Document[]
+  emails             Email[]
+  followUps          FollowUp[]
+  decisions          Decision[]
+  commitments        Commitment[]
+  conversations      AIConversation[]
+  aiActions          AIAction[]
+  notifications      Notification[]
+  automations        Automation[]
+  activityLogs       ActivityLog[]
+  contactGroups      ContactGroup[]
+  mailboxConnections MailboxConnection[]
+  outboundEmails     OutboundEmail[]
+  oauthStates        OAuthState[]
 }
 
 model Membership {
@@ -232,27 +273,127 @@ model Company {
 }
 
 model Contact {
-  id             String            @id @default(cuid())
-  organizationId String
-  companyId      String?
-  name           String
-  email          String?
-  phone          String?
-  role           String?
-  relationship   String?
-  notes          String?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  company        Company?          @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  meetingLinks   MeetingAttendee[]
-  tasks          Task[]
-  emails         Email[]
-  followUps      FollowUp[]
-  commitments    Commitment[]
+  id               String               @id @default(cuid())
+  organizationId   String
+  companyId        String?
+  name             String
+  email            String?
+  phone            String?
+  role             String?
+  relationship     String?
+  notes            String?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  organization     Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  company          Company?             @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  meetingLinks     MeetingAttendee[]
+  tasks            Task[]
+  emails           Email[]
+  followUps        FollowUp[]
+  commitments      Commitment[]
+  groupMemberships ContactGroupMember[]
+  outboundEmails   OutboundEmail[]
 
   @@index([organizationId, name])
   @@index([organizationId, email])
+}
+
+model ContactGroup {
+  id             String               @id @default(cuid())
+  organizationId String
+  name           String
+  description    String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  organization   Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  members        ContactGroupMember[]
+  outboundEmails OutboundEmail[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId, updatedAt])
+}
+
+model ContactGroupMember {
+  id        String       @id @default(cuid())
+  groupId   String
+  contactId String
+  createdAt DateTime     @default(now())
+  group     ContactGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  contact   Contact      @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, contactId])
+  @@index([contactId])
+}
+
+model MailboxConnection {
+  id                    String          @id @default(cuid())
+  organizationId        String
+  userId                String
+  provider              MailboxProvider
+  emailAddress          String
+  accessTokenEncrypted  String
+  refreshTokenEncrypted String?
+  accessTokenExpiresAt  DateTime?
+  scopesJson            String          @default("[]")
+  status                MailboxStatus   @default(ACTIVE)
+  historyId             String?
+  lastSyncedAt          DateTime?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  organization          Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  outboundEmails        OutboundEmail[]
+
+  @@unique([organizationId, userId, provider])
+  @@index([organizationId, status])
+}
+
+model OAuthState {
+  id                    String          @id @default(cuid())
+  stateHash             String          @unique
+  organizationId        String
+  userId                String
+  provider              MailboxProvider
+  codeVerifierEncrypted String
+  expiresAt             DateTime
+  createdAt             DateTime        @default(now())
+  organization          Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+  @@index([organizationId, userId])
+}
+
+model OutboundEmail {
+  id                  String              @id @default(cuid())
+  organizationId      String
+  mailboxConnectionId String?
+  createdById         String
+  contactId           String?
+  groupId             String?
+  toEmail             String
+  toName              String
+  fromName            String
+  subject             String
+  bodyText            String
+  status              OutboundEmailStatus @default(DRAFT)
+  scheduledAt         DateTime?
+  sentAt              DateTime?
+  externalId          String?
+  providerDraftId     String?
+  threadId            String?
+  lastError           String?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  organization        Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  mailboxConnection   MailboxConnection?  @relation(fields: [mailboxConnectionId], references: [id], onDelete: SetNull)
+  createdBy           User                @relation("OutboundEmailCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  contact             Contact?            @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  group               ContactGroup?       @relation(fields: [groupId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status, scheduledAt])
+  @@index([mailboxConnectionId, status])
+  @@index([createdById, createdAt])
 }
 
 model Project {

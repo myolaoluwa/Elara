@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "email:dispatch": "node scripts/dispatch-emails.mjs"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "1.7.6",

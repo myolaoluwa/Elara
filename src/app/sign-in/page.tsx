@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/auth-form";
 import { getWorkspaceContext } from "@/lib/workspace";
+import { isBrevoConfigured } from "@/lib/email/brevo";
 
 export const metadata = { title: "Sign in" };
 
 export default async function SignInPage() {
   if (await getWorkspaceContext()) redirect("/");
-  return <AuthForm mode="sign-in" />;
+  return <AuthForm mode="sign-in" otpEnabled={isBrevoConfigured()} />;
 }
