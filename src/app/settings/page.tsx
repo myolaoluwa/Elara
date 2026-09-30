@@ -1,0 +1,6 @@
+import { AppShell } from "@/components/app-shell";
+import { SettingsForm } from "@/components/settings-form";
+import { prisma } from "@/lib/prisma";
+import { requireWorkspaceContext } from "@/lib/workspace";
+export const metadata = { title: "Settings" };
+export default async function SettingsPage() { const context = await requireWorkspaceContext(); const executive = await prisma.executive.findFirst({ where: { organizationId: context.organization.id }, include: { preferences: true } }); const preference = (key: string) => { const value = executive?.preferences.find((item) => item.key === key)?.valueJson; if (!value) return ""; try { return JSON.parse(value) as string; } catch { return ""; } }; return <AppShell workspaceName={context.organization.name} userName={context.user.name}><div className="page-heading compact-heading"><div><p className="eyebrow">Configuration</p><h1>Settings</h1><p className="page-subtitle">Define the executive context and operating rules Elara should respect.</p></div></div><SettingsForm values={{ workspaceName: context.organization.name, executiveName: executive?.name || context.user.name, executiveEmail: executive?.email || "", executiveTitle: executive?.title || "", timezone: executive?.timezone || "UTC", workingHours: preference("working_hours"), schedulingRules: preference("scheduling_rules") }} /></AppShell>; }

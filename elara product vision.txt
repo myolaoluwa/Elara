@@ -1,0 +1,556 @@
+Product Vision — AI Executive Assistant
+OS
+Product Name: ELARA
+One-line vision
+Build the operating system for Executive Assistants — one intelligent workspace that
+captures everything, understands everything, remembers everything, and helps execute
+everything.
+The product should eventually cover the EA’s workflow from:
+Inbox → Calendar → Meetings → Tasks → People → Documents → Travel → Follow-ups
+→ Research → Reporting → Executive Briefings
+with an LLM sitting across the entire system.
+
+MVP — The AI EA Workspace
+Goal: Build the smallest version that genuinely makes an EA’s daily work easier.
+The MVP should focus heavily on meetings, communication, tasks, calendar, and executive
+memory.
+1. AI Dashboard
+The home screen answers:
+“What do I need to know and do today?”
+Show:
+● Today’s meetings
+● Upcoming meetings
+● Important emails
+● Pending tasks
+
+● Overdue tasks
+● Follow-ups
+● Upcoming deadlines
+● Items requiring executive attention
+● AI-generated daily briefing
+Example:
+Good morning, Racheal.
+6 meetings today
+3 emails require attention
+2 overdue follow-ups
+1 document awaiting signature
+4 tasks due today
+Priority: ABC Ltd meeting at 2 PM.
+
+2. AI Chat / Command Center
+This becomes the primary interface.
+She can say:
+“What’s happening today?”
+“Summarize everything about tomorrow’s meeting.”
+“Draft a response to this email.”
+“What am I waiting for?”
+“What did the boss promise John?”
+“Prepare tomorrow’s schedule.”
+“Create tasks from this meeting.”
+“Find everything related to the ABC project.”
+The AI should have access to the application’s data and context.
+
+3. Meeting Management
+This should be one of the MVP’s strongest modules.
+Before meeting
+Automatically generate:
+● Meeting briefing
+● Attendee information
+● Previous meeting history
+● Previous notes
+● Outstanding action items
+● Relevant documents
+● Previous emails
+● Suggested agenda
+● Questions to address
+During meeting
+Live transcription
+● Record meeting
+● Transcribe conversation
+● Speaker identification
+● Timestamping
+● Important moments
+● Decisions
+● Questions
+● Commitments
+After meeting
+Automatically generate:
+Meeting Minutes
+● Meeting title
+● Date
+● Attendees
+● Agenda
+● Discussion summary
+● Decisions
+● Action items
+
+● Responsible person
+● Deadlines
+● Next steps
+Then:
+“Create tasks from these minutes.”
+And the system creates them automatically.
+
+4. Calendar
+MVP calendar functionality:
+● View calendar
+● Create events
+● Edit events
+● Delete events
+● Reschedule
+● Meeting reminders
+● Recurring events
+● Meeting links
+● Location
+● Time zones
+● Conflict detection
+AI layer:
+“Move my 3 PM meeting to tomorrow.”
+“Find a 45-minute slot with John next week.”
+“Don’t schedule anything before 9 AM.”
+
+5. Task Management
+Tasks should be created from anything.
+
+Email → task
+Meeting → task
+Voice note → task
+Conversation → task
+Calendar → task
+Manual input → task
+Each task contains:
+● Task
+● Owner
+● Deadline
+● Priority
+● Related person
+● Related company
+● Related project
+● Source
+● Status
+● Notes
+The AI automatically detects tasks.
+Example:
+“John will send the proposal by Friday.”
+Automatically becomes:
+John — Send proposal — Friday
+
+6. Follow-Up Engine
+This is extremely important for an EA.
+The system tracks:
+● People who haven’t replied
+● Tasks that haven’t been completed
+● Documents awaiting approval
+● Promises
+● Deadlines
+● Pending decisions
+
+● Outstanding requests
+Instead of remembering everything manually:
+“You are waiting for John to send the proposal. It’s been 4 days.”
+Then:
+Draft follow-up
+“Hi John, just following up on...”
+The EA approves and sends.
+
+7. AI Email Assistant
+MVP:
+● Connect email
+● Inbox summary
+● Email categorization
+● Email summaries
+● Extract tasks
+● Extract deadlines
+● Draft replies
+● Detect important emails
+● Search emails
+● Find conversations
+Eventually:
+AI Inbox
+where the EA doesn’t need to manually process every email.
+
+8. Executive Memory
+This is the foundation of the product.
+
+The system remembers:
+People
+● Name
+● Position
+● Company
+● Relationship
+● Previous interactions
+● Preferences
+Projects
+● Status
+● Documents
+● People
+● Meetings
+● Decisions
+● Tasks
+Executive preferences
+● Meeting preferences
+● Communication style
+● Scheduling rules
+● Important people
+● Working hours
+Decisions
+“We agreed to renew the contract for another year.”
+The AI should remember that.
+
+9. Document Intelligence
+Upload documents and ask:
+“Summarize this.”
+“What are the important clauses?”
+
+“What does the executive need to sign?”
+“Compare these two contracts.”
+“Find the deadline.”
+“Create a briefing from this document.”
+Supported:
+● PDF
+● Word
+● Excel
+● PowerPoint
+● Images
+● Scanned documents
+
+MVP EXPERIENCE
+The core loop becomes:
+CAPTURE
+↓
+UNDERSTAND
+↓
+ORGANIZE
+↓
+REMEMBER
+↓
+ACT
+↓
+FOLLOW UP
+That’s the foundation.
+
+V1 — The Full AI Executive Assistant
+Once MVP works, expand beyond meetings and basic productivity.
+
+1. Advanced Email Management
+AI can:
+● Categorize inbox
+● Prioritize messages
+● Draft replies
+● Detect sentiment/context
+● Identify VIP emails
+● Track conversations
+● Automatically create tasks
+● Track unanswered emails
+● Prepare inbox briefings
+
+2. Advanced Calendar Intelligence
+AI learns the executive’s scheduling preferences.
+For example:
+Rules
+● No meetings before 9 AM
+● Maximum 5 meetings/day
+● 15-minute buffer
+● Lunch protected
+● Friday afternoon reserved for deep work
+The AI uses these rules when scheduling.
+
+3. Contact & Relationship Management
+Build an intelligent relationship database.
+For every important person:
+John Adeyemi
+ABC Ltd
+
+Last interaction: Sept 20
+Last meeting: Sept 12
+Outstanding item: Proposal
+Relationship: Partner
+Next interaction: Oct 2
+AI can answer:
+“When did we last speak to John?”
+“What are we waiting for from ABC?”
+
+4. Executive Briefings
+Before every important meeting, automatically create:
+Meeting Brief
+Who you’re meeting
+Why you’re meeting
+Previous interactions
+Relevant emails
+Previous decisions
+Open issues
+Documents
+Things requiring attention
+This eliminates hours of manual preparation.
+
+5. Research Agent
+
+The EA can ask:
+“Research this company before tomorrow’s meeting.”
+The system researches:
+● Company
+● People
+● Products
+● Recent developments
+● Relevant news
+● Industry
+● Competitors
+Then produces a concise briefing.
+
+6. Travel Management
+Add:
+● Flights
+● Hotels
+● Transportation
+● Itinerary
+● Travel documents
+● Meeting schedules
+● Time zones
+● Travel reminders
+● Check-in reminders
+The system produces:
+Executive Travel Pack
+LAGOS → LONDON
+Flight
+Hotel
+Airport transfer
+Meetings
+Addresses
+Contacts
+
+Documents
+Schedule
+Important reminders
+
+7. Expense Management
+● Upload receipts
+● OCR
+● Categorization
+● Expense reports
+● Reimbursements
+● Travel expenses
+● Invoice tracking
+● Payment reminders
+Example:
+Receipt uploaded → ₦125,000 → Business travel → September 26
+
+8. Vendor Management
+Manage:
+● Vendors
+● Quotations
+● Contracts
+● Payments
+● Renewals
+● Contacts
+● Service history
+AI can compare vendor proposals and summarize differences.
+
+9. Automated Reports
+Generate:
+
+● Daily executive report
+● Weekly report
+● Meeting report
+● Task report
+● Expense report
+● Project report
+● Follow-up report
+
+V2 — Autonomous EA
+This is where the product becomes much more powerful.
+The EA stops being someone who manually operates software and becomes someone who
+supervises an AI that operates software.
+1. AI Workflow Automation
+Create workflows such as:
+When a meeting ends → transcribe → summarize → extract tasks → assign tasks → draft
+follow-up → update CRM → schedule follow-up.
+One event triggers an entire workflow.
+
+2. Proactive AI
+Instead of waiting for instructions:
+“Your 2 PM meeting has no agenda.”
+“John hasn’t responded to the proposal.”
+“The contract expires in 14 days.”
+“Your executive has three meetings tomorrow but hasn’t reviewed the briefing documents.”
+“There’s a scheduling conflict next Tuesday.”
+The AI continuously watches the workspace.
+
+3. Communication Agent
+AI handles routine communication.
+For example:
+“Ask everyone attending tomorrow’s meeting to confirm.”
+The agent:
+1. Finds attendees.
+2. Determines communication channel.
+3. Drafts messages.
+4. Shows them for approval.
+5. Sends them.
+6. Tracks responses.
+Eventually, configurable levels:
+Draft only → Ask before sending → Automatically send
+
+4. Meeting Agent
+The meeting agent becomes almost completely autonomous.
+Before:
+Prepare briefing
+During:
+Transcribe + understand
+After:
+Minutes → tasks → follow-ups → updates
+The entire meeting lifecycle becomes one automated workflow.
+
+5. Executive Memory Graph
+Instead of simple database records, create a connected knowledge graph:
+Executive
+│
+├── People
+│ ├── Companies
+│ ├── Meetings
+│ └── Conversations
+│
+├── Projects
+│ ├── Documents
+│ ├── Tasks
+│ └── Decisions
+│
+├── Travel
+│
+└── Preferences
+This allows much more intelligent questions:
+“What are all the unresolved issues involving our Lagos partners?”
+The system can connect information across emails, meetings, documents, tasks and people.
+
+6. Personal Executive Rules Engine
+The EA can teach the system rules:
+Never schedule meetings before 9 AM.
+Always give the CEO 30 minutes between meetings.
+Don’t accept meetings from unknown people without approval.
+John should always be copied on ABC-related emails.
+Every Monday morning, prepare the weekly executive briefing.
+These become permanent automation rules.
+
+7. Voice Assistant
+The EA should eventually be able to speak to the system:
+“I’m leaving the office. Tell me everything I need to know for tomorrow.”
+or:
+“Remind me what happened with the ABC meeting.”
+or:
+“Send John a message asking for the proposal.”
+
+V3 — The Autonomous Executive Office
+This is the long-term vision.
+Not an assistant app.
+An AI-powered executive office.
+1. Multi-Agent Architecture
+Different AI agents specialize in different areas:
+EXECUTIVE AI
+│
+┌──────────────┼──────────────┐
+│ │ │
+EMAIL AGENT CALENDAR AGENT MEETING AGENT
+│ │ │
+RESEARCH AGENT TRAVEL AGENT TASK AGENT
+│ │ │
+DOCUMENT AGENT FINANCE AGENT RELATIONSHIP AGENT
+A central orchestrator coordinates them.
+
+2. Autonomous Daily Operations
+Every morning:
+06:30
+AI reviews everything.
+07:00
+Generates executive briefing.
+08:00
+Checks inbox.
+08:30
+Identifies urgent issues.
+09:00
+Meeting preparation.
+Throughout the day
+Monitors:
+● Email
+● Calendar
+● Tasks
+● Deadlines
+● Responses
+● Meetings
+● Travel
+● Documents
+End of day
+Generates executive report.
+Evening
+Prepares tomorrow.
+The EA supervises rather than manually manages every piece.
+
+3. Predictive Assistance
+Eventually the system can recognize patterns.
+For example:
+“The executive usually reviews contracts 24 hours before signing. This contract is scheduled for
+tomorrow but hasn’t been reviewed.”
+Or:
+“This meeting usually generates follow-up tasks. I’ve prepared a follow-up checklist.”
+The AI becomes proactive based on historical behavior.
+
+4. Executive Command Center
+The final interface could be incredibly simple:
+┌──────────────────────────────────────┐
+│ Good morning │
+│ │
+│ 6 meetings 12 emails 8 tasks │
+│ │
+│ ──────────────────────────────────── │
+│ │
+│ 🔴 Needs attention │
+│ │
+│ Contract expires tomorrow │
+│ John hasn't responded │
+│ 2 PM meeting has no agenda │
+│ │
+│ ──────────────────────────────────── │
+│ │
+│ Today's Schedule │
+│ │
+│ 9:00 Team meeting │
+│ 11:00 Client call │
+
+│ 2:00 ABC Ltd │
+│ 4:30 Executive review │
+│ │
+│ ──────────────────────────────────── │
+│ │
+│ What would you like me to handle? │
+│ [ Ask anything... ] │
+└──────────────────────────────────────┘
+
+The Product Roadmap
+
+Stage Main objective
+
+MVP AI-powered EA workspace
+
+V1 Complete digital EA toolkit
+
+V2 Proactive AI EA
+
+V3 Autonomous AI executive office
+
+MVP
+Capture + organize + summarize + remember + assist
+V1
+Manage the entire EA workflow
+V2
+Act proactively and automate workflows
+
+V3
+Operate an AI-powered executive office
+
+The north-star workflow
+Everything in the product should ultimately feed this loop:
+Information comes in → AI understands it → AI connects it to existing context → AI
+decides what needs attention → AI prepares or executes the work → AI tracks the result
+→ AI remembers it.
+That is what makes this much more interesting than building another Notion + calendar + AI
+chatbot.
+The killer feature is ultimately:
+“Don’t just tell me what I need to do. Handle everything you can, and bring me only what
+requires my judgment.”

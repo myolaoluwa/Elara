@@ -1,0 +1,988 @@
+AI Executive Assistant OS
+Product name: ELARA
+Phased Build Plan for Codex
+0. Product Definition
+Build a modern AI-powered Executive Assistant operating system.
+The application should help an Executive Assistant manage the complete lifecycle of executive
+work:
+● Email
+● Calendar
+● Meetings
+● Transcription
+● Meeting minutes
+● Tasks
+● Follow-ups
+● Contacts
+● Documents
+● Research
+● Travel
+● Expenses
+● Vendors
+● Executive memory
+● Briefings
+● Reporting
+● Automations
+● AI-assisted communication
+The long-term goal is not simply to create a productivity dashboard.
+The long-term goal is:
+An AI operating system that understands the executive, remembers their work, handles
+repetitive operations, proactively identifies what needs attention, and allows the EA to
+supervise rather than manually perform every task.
+Build this progressively.
+
+Do NOT attempt to implement the entire vision at once.
+
+PHASE 1 — Foundation & Product
+Architecture
+
+Objective
+Create a clean, scalable foundation that all future AI and productivity features can build upon.
+Requirements
+Set up:
+● Frontend application
+● Backend/API architecture
+● Database
+● Authentication
+● User profiles
+● Organization/workspace structure
+● Executive profile
+● EA profile
+● Settings
+● Navigation
+● Global search
+● Notification system
+● Activity/audit log
+● AI service abstraction
+Core entities
+Create database models for:
+● Users
+● Organizations
+● Executives
+● Executive preferences
+● Contacts
+● Companies
+
+● Projects
+● Tasks
+● Meetings
+● Calendar events
+● Meeting notes
+● Transcriptions
+● Documents
+● Emails
+● Follow-ups
+● Decisions
+● Commitments
+● AI conversations
+● AI actions
+● Notifications
+● Automations
+● Activity logs
+Design the schema so new entities can be added without rewriting the architecture.
+UI
+Create the initial application shell:
+● Sidebar
+● Top navigation
+● Dashboard
+● AI Command Center
+● Inbox
+● Calendar
+● Meetings
+● Tasks
+● Contacts
+● Documents
+● Follow-ups
+● Settings
+Use realistic empty states rather than placeholder lorem ipsum.
+AI architecture
+Create a provider-agnostic AI abstraction.
+Example conceptual architecture:
+
+AI Service
+|
+├── Chat
+├── Summarization
+├── Extraction
+├── Classification
+├── Transcription
+├── Tool calling
+└── Agent orchestration
+Do not hard-code AI logic throughout the frontend.
+All AI operations should go through a central service.
+
+PHASE 2 — AI Command Center
+
+Objective
+Create the central AI interface that becomes the primary interaction layer.
+The EA should be able to ask the system questions about their workspace.
+Examples:
+● “What’s happening today?”
+● “What requires my attention?”
+● “What am I waiting for?”
+● “Summarize today’s meetings.”
+● “What tasks are overdue?”
+● “What did we decide about the ABC project?”
+● “Prepare me for my next meeting.”
+Features
+Implement:
+● AI chat
+● Conversation history
+● Streaming responses
+● Context-aware responses
+
+● Workspace context
+● Structured AI responses
+● Suggested actions
+● Action confirmation
+● AI activity history
+Tool system
+Create an internal AI tool architecture.
+Initial tools:
+search_contacts
+search_tasks
+search_meetings
+search_documents
+search_emails
+search_projects
+search_followups
+search_decisions
+create_task
+update_task
+create_followup
+create_note
+get_calendar
+get_meeting
+get_contact
+get_project
+The AI should be able to call tools rather than hallucinating information.
+Important rule:
+If information does not exist in the connected workspace, the AI must say it does not have the
+information.
+
+PHASE 3 — Executive Dashboard
+
+Objective
+Build the daily command center for the EA.
+The dashboard should answer:
+“What do I need to know and do today?”
+Dashboard sections
+Today
+Show:
+● Meetings
+● Tasks
+● Deadlines
+● Important emails
+● Follow-ups
+● Notifications
+AI Daily Briefing
+Generate:
+● Today’s priorities
+● Important meetings
+● Outstanding issues
+● Deadlines
+● Pending decisions
+● Follow-ups
+● Items requiring executive attention
+Priority Inbox
+Show information requiring action.
+Upcoming
+Show:
+● Upcoming meetings
+● Deadlines
+● Tasks
+
+● Travel
+● Follow-ups
+AI actions
+Allow:
+● “Prepare my day”
+● “Show what needs attention”
+● “Summarize my day”
+● “Prepare tomorrow”
+
+PHASE 4 — Calendar & Scheduling
+Objective
+Build intelligent calendar management.
+Features
+Implement:
+● Calendar views
+● Day/week/month
+● Create event
+● Edit event
+● Delete event
+● Recurring events
+● Reminders
+● Attendees
+● Locations
+● Meeting links
+● Time zones
+● Conflict detection
+AI scheduling
+Support commands such as:
+
+“Find a 30-minute slot with John next week.”
+“Move the 3 PM meeting to tomorrow.”
+“Schedule this for next Tuesday.”
+“Don’t schedule meetings before 9 AM.”
+Executive scheduling preferences
+Create rules for:
+● Working hours
+● Meeting hours
+● Focus time
+● Lunch
+● Meeting buffers
+● Maximum meetings per day
+● Preferred meeting duration
+● Preferred days
+The scheduling engine should respect these rules.
+
+PHASE 5 — Meeting Management
+Objective
+Build the complete meeting lifecycle.
+This is a major MVP feature.
+Before meeting
+Generate:
+● Meeting briefing
+● Attendees
+● Previous interactions
+● Previous meeting notes
+● Outstanding tasks
+
+● Relevant documents
+● Relevant emails
+● Suggested agenda
+● Questions
+● Open issues
+During meeting
+Implement:
+● Audio recording
+● Audio upload
+● Transcription
+● Speaker identification where possible
+● Timestamps
+● Searchable transcript
+● Important moments
+AI meeting analysis
+Extract:
+● Summary
+● Decisions
+● Action items
+● Owners
+● Deadlines
+● Commitments
+● Questions
+● Follow-ups
+After meeting
+Generate:
+Meeting Minutes
+Include:
+● Meeting title
+● Date
+● Time
+● Attendees
+
+● Agenda
+● Discussion summary
+● Decisions
+● Action items
+● Owners
+● Deadlines
+● Next steps
+Allow the EA to:
+● Edit minutes
+● Approve minutes
+● Copy/export minutes
+● Send minutes
+● Create tasks from minutes
+● Create follow-ups
+Important
+Do not claim something was said if it is not supported by the transcript.
+Clearly distinguish:
+● Transcript
+● AI summary
+● AI inference
+● Confirmed decision
+● Extracted action item
+
+PHASE 6 — Task & Follow-Up Engine
+Objective
+Turn the system into the EA’s external memory.
+Tasks
+Implement:
+● Create
+
+● Edit
+● Assign
+● Due dates
+● Priority
+● Status
+● Projects
+● Owners
+● Tags
+● Notes
+● Attachments
+● Source
+Tasks can originate from:
+● Manual creation
+● Email
+● Meeting
+● Transcript
+● AI chat
+● Document
+● Follow-up
+Follow-up engine
+Track:
+● Pending responses
+● Unfinished tasks
+● Promises
+● Commitments
+● Documents awaiting action
+● Approvals
+● Deadlines
+Example:
+John Adeyemi
+↓
+Send proposal
+↓
+Due Friday
+↓
+No response
+↓
+
+Follow-up required
+Allow AI to draft the follow-up.
+
+PHASE 7 — Email Intelligence
+Objective
+Connect email and make the inbox AI-assisted.
+Use the appropriate email provider integration.
+Features
+Implement:
+● Inbox
+● Email search
+● Thread view
+● Email categorization
+● Important email detection
+● Email summaries
+● Task extraction
+● Deadline extraction
+● Follow-up detection
+● AI reply drafting
+AI commands
+Examples:
+“Summarize my important emails.”
+“What emails require a response?”
+“Draft a reply to John.”
+“Find all emails about the ABC project.”
+“What am I waiting for?”
+
+Safety
+Initially use:
+AI drafts → EA reviews → EA sends
+Do not make autonomous sending the default.
+
+PHASE 8 — Contacts & Executive Memory
+Objective
+Create persistent organizational memory.
+Contact profiles
+Store:
+● Name
+● Role
+● Company
+● Contact information
+● Relationship
+● Notes
+● Meetings
+● Emails
+● Tasks
+● Documents
+● Follow-ups
+● Interaction history
+Executive memory
+Store:
+● Preferences
+● Scheduling rules
+● Communication preferences
+● Important relationships
+
+● Decisions
+● Commitments
+● Projects
+● Historical context
+The AI should be able to answer:
+“When did we last speak with John?”
+“What are we waiting for from ABC?”
+“What was decided about the contract?”
+Memory rules
+Only store information that is:
+● Explicitly provided
+● Extracted from authorized workspace data
+● Confirmed by the user
+● Clearly useful as persistent context
+Allow users to inspect, edit and delete memory.
+
+PHASE 9 — Document Intelligence
+Objective
+Make the application’s document system searchable and AI-readable.
+Support:
+● PDF
+● DOCX
+● XLSX
+● PPTX
+● Images
+● Scanned documents where OCR is available
+Features
+
+● Upload
+● Preview
+● Search
+● Organization
+● Tags
+● Folders
+● Version information
+● AI summarization
+● Information extraction
+AI commands:
+“Summarize this contract.”
+“What are the deadlines?”
+“Compare these two documents.”
+“What requires the executive’s signature?”
+“Find documents related to the ABC project.”
+
+PHASE 10 — V1 Research & Executive
+Briefings
+Objective
+Move from reactive assistance to preparation.
+Research assistant
+Allow the EA to request research about:
+● Companies
+● People
+● Events
+● Vendors
+● Products
+● Industries
+● Competitors
+
+● Travel destinations
+Research must use reliable external sources where appropriate and clearly distinguish sourced
+facts from AI-generated interpretation.
+Executive briefing engine
+Automatically combine:
+● Calendar
+● Contacts
+● Email
+● Documents
+● Previous meetings
+● Tasks
+● Decisions
+● Research
+into a single briefing.
+Example:
+MEETING BRIEF
+ABC LTD
+Tomorrow — 2:00 PM
+Attendees
+Previous interactions
+Last discussion
+Outstanding issues
+Relevant documents
+Open tasks
+Recent communication
+Key questions
+Suggested agenda
+
+PHASE 11 — Travel & Expense
+Management
+
+Objective
+Expand the application beyond office productivity.
+Travel
+Implement:
+● Travel plans
+● Flights
+● Hotels
+● Transport
+● Itineraries
+● Meeting locations
+● Travel documents
+● Time zones
+● Reminders
+Create an:
+Executive Travel Pack
+Expenses
+Implement:
+● Receipt upload
+● OCR
+● Expense extraction
+● Categories
+● Amount
+● Date
+● Vendor
+● Expense reports
+● Reimbursements
+● Invoice tracking
+
+PHASE 12 — Vendors & Events
+
+Vendor management
+Implement:
+● Vendors
+● Contacts
+● Quotes
+● Contracts
+● Payments
+● Renewals
+● Service history
+● Notes
+Event management
+Implement:
+● Events
+● Guests
+● RSVPs
+● Invitations
+● Venues
+● Vendors
+● Catering
+● Travel
+● Accommodation
+● Event schedules
+AI should assist with coordination and preparation.
+
+PHASE 13 — Automation Engine
+Objective
+Allow the EA to create repeatable workflows.
+Create a workflow engine:
+TRIGGER
+↓
+
+CONDITIONS
+↓
+AI PROCESSING
+↓
+ACTIONS
+↓
+APPROVAL
+↓
+EXECUTION
+↓
+LOG
+Example:
+Meeting ends
+↓
+Transcribe
+↓
+Generate minutes
+↓
+Extract tasks
+↓
+Create tasks
+↓
+Draft follow-up
+↓
+Ask EA for approval
+↓
+Send
+Another:
+Email arrives
+↓
+Classify
+↓
+Important?
+↓
+Extract deadline
+↓
+Create task
+↓
+Notify EA
+
+PHASE 14 — Proactive AI / V2
+
+Objective
+The AI should stop waiting for instructions.
+Create a monitoring engine.
+Monitor:
+● Email
+● Calendar
+● Tasks
+● Deadlines
+● Follow-ups
+● Documents
+● Meetings
+● Travel
+● Commitments
+Generate proactive alerts.
+Examples:
+“John hasn’t responded in 5 days.”
+“Your 2 PM meeting has no agenda.”
+“The contract expires in 14 days.”
+“You have three meetings tomorrow without briefing material.”
+“The executive promised to send the proposal today.”
+Notification priority
+Use:
+● Critical
+● High
+● Normal
+● Informational
+Avoid notification spam.
+
+The AI should consolidate related notifications.
+
+PHASE 15 — AI Communication Agent
+Objective
+Automate routine communication while keeping the EA in control.
+Channels can include supported:
+● Email
+● SMS
+● WhatsApp
+● Other messaging integrations
+Workflow
+AI prepares message
+↓
+EA reviews
+↓
+Approve
+↓
+Send
+↓
+Track response
+↓
+Update relationship/task
+Eventually allow configurable automation levels:
+Draft only
+Ask before sending
+Auto-send approved workflow
+Default to human approval.
+
+PHASE 16 — Advanced Executive Memory
+Objective
+Create a connected knowledge layer.
+Connect:
+People
+↕
+Companies
+↕
+Projects
+↕
+Meetings
+↕
+Emails
+↕
+Documents
+↕
+Tasks
+↕
+Decisions
+↕
+Commitments
+The AI should answer cross-system questions.
+Example:
+“Show me everything unresolved with our partners.”
+The system searches across:
+● Emails
+● Meetings
+● Tasks
+● Documents
+● Contacts
+● Decisions
+● Follow-ups
+and creates a contextual answer.
+
+PHASE 17 — Executive Rules Engine
+Objective
+Allow the EA to teach the application how the executive operates.
+Examples:
+“Never schedule meetings before 9 AM.”
+“Always leave 15 minutes between meetings.”
+“Friday afternoons are focus time.”
+“John must be copied on ABC emails.”
+“Every Monday morning prepare a weekly briefing.”
+Convert natural-language rules into structured rules.
+Allow:
+● Create
+● Edit
+● Disable
+● Delete
+● Test
+Every automated action should show which rule caused it.
+
+PHASE 18 — Voice Interface
+
+Objective
+Allow the EA to interact naturally while working.
+Support voice input for:
+
+● Commands
+● Notes
+● Tasks
+● Search
+● Questions
+● Meeting preparation
+● Follow-ups
+Examples:
+“Remind me what happened in the ABC meeting.”
+“Create a task for John to send the proposal Friday.”
+“Prepare everything I need for tomorrow.”
+
+PHASE 19 — Multi-Agent Architecture / V3
+Objective
+Evolve the AI from one assistant into a coordinated AI workforce.
+Create specialized agents:
+EXECUTIVE AI
+│
+┌─────────────┼─────────────┐
+│ │ │
+EMAIL AGENT CALENDAR AGENT MEETING AGENT
+│ │ │
+RESEARCH AGENT TRAVEL AGENT TASK AGENT
+│ │ │
+DOCUMENT AGENT FINANCE AGENT RELATIONSHIP AGENT
+A central orchestrator manages them.
+Agents should be able to:
+● Receive objectives
+● Plan
+● Call tools
+● Delegate subtasks
+
+● Return results
+● Request approval
+● Record actions
+
+PHASE 20 — Autonomous Executive
+Office
+
+Objective
+Reach the long-term product vision.
+The system continuously monitors the executive’s operations.
+Morning
+Generate:
+● Daily briefing
+● Priorities
+● Meetings
+● Risks
+● Follow-ups
+● Decisions required
+During the day
+Monitor:
+● Email
+● Calendar
+● Tasks
+● Meetings
+● Deadlines
+● Documents
+● Travel
+● Commitments
+After meetings
+Automatically:
+
+● Transcribe
+● Summarize
+● Generate minutes
+● Extract tasks
+● Update records
+● Prepare follow-ups
+End of day
+Generate:
+● Completed work
+● Outstanding work
+● Pending decisions
+● Follow-ups
+● Tomorrow’s priorities
+Weekly
+Generate:
+● Executive weekly report
+● Outstanding commitments
+● Important relationships
+● Upcoming deadlines
+● Projects requiring attention
+
+GLOBAL AI REQUIREMENTS
+AI must be integrated throughout the product, not bolted onto individual pages.
+Every major module should expose structured tools to the AI.
+Example:
+Calendar
+├── get_events
+├── create_event
+├── update_event
+└── cancel_event
+Meetings
+
+├── get_meeting
+├── get_transcript
+├── generate_minutes
+└── create_tasks
+Tasks
+├── search_tasks
+├── create_task
+├── update_task
+└── complete_task
+Contacts
+├── search_contacts
+├── get_contact
+└── update_contact
+Documents
+├── search_documents
+├── read_document
+└── summarize_document
+Email
+├── search_email
+├── summarize_email
+└── draft_reply
+The AI should use these tools rather than inventing data.
+
+HUMAN CONTROL MODEL
+The application must distinguish between:
+READ
+AI can automatically:
+● Search
+● Analyze
+● Summarize
+● Categorize
+● Prepare
+
+SUGGEST
+AI can:
+● Draft
+● Recommend an action
+● Create a proposed task
+● Prepare a schedule
+● Prepare a response
+EXECUTE
+Actions such as:
+● Sending emails
+● Sending messages
+● Cancelling meetings
+● Making bookings
+● Modifying important records
+● Spending money
+should require explicit authorization unless the user has deliberately configured an automation
+rule allowing the action.
+Every important AI action must be logged.
+
+AUDIT LOG
+Create a complete activity history.
+Record:
+● User
+● AI agent
+● Action
+● Timestamp
+● Source
+● Data accessed
+● Result
+● Approval status
+Example:
+
+10:32 AM
+AI generated meeting minutes
+10:34 AM
+EA approved minutes
+10:35 AM
+AI created 4 tasks
+10:36 AM
+AI drafted follow-up email
+10:37 AM
+EA approved
+10:38 AM
+Email sent
+
+SECURITY & PRIVACY
+Because this application handles highly sensitive executive information:
+Implement:
+● Strong authentication
+● Role-based access
+● Workspace isolation
+● Encryption where appropriate
+● Secure secrets management
+● Audit logs
+● Permission controls
+● Data deletion
+● Export
+● AI access controls
+● Integration-specific permissions
+Never expose one user’s workspace data to another user.
+Never put API keys or OAuth secrets in frontend code.
+Never store third-party passwords.
+
+PRODUCT DESIGN PRINCIPLES
+The application should feel:
+● Professional
+● Calm
+● Fast
+● Premium
+● Intelligent
+● Minimal
+● Human
+● Operational
+Avoid making it look like a generic AI chatbot.
+The AI should be integrated into the workflow.
+Use AI where it provides leverage, not simply because AI exists.
+
+DEVELOPMENT RULES FOR CODEX
+1. Build in phases.
+2. Do not implement future phases prematurely.
+3. Before starting each phase, inspect the existing architecture.
+4. Reuse existing components and services.
+5. Do not duplicate business logic.
+6. Keep AI logic centralized.
+7. Keep integrations modular.
+8. Use typed interfaces throughout.
+9. Validate all external input.
+10. Handle loading, error and empty states.
+11. Build responsive interfaces.
+12. Do not use fake data in production functionality.
+13. Do not fabricate AI-generated information.
+14. Add appropriate tests for critical functionality.
+15. Maintain an audit trail for AI actions.
+16. Never expose secrets to the client.
+17. Never allow an AI action to silently perform a high-impact external action.
+18. Preserve human approval controls.
+19. Document important architectural decisions.
+
+20. After every phase, run tests, fix errors and verify the existing functionality before moving
+forward.
+
+RELEASE STRUCTURE
+
+MVP
+Phases 1–9
+Core product:
+Dashboard + AI + Calendar + Meetings + Transcription + Minutes + Tasks + Follow-ups +
+Email + Memory + Documents
+
+V1
+Phases 10–13
+Complete EA toolkit:
+Research + Briefings + Travel + Expenses + Vendors + Events + Automation
+
+V2
+Phases 14–18
+Proactive AI:
+Monitoring + Proactive alerts + Communication Agent + Advanced Memory + Rules
+Engine + Voice
+
+V3
+Phases 19–20
+
+Autonomous Executive Office:
+Multi-agent orchestration + autonomous workflows + continuous executive operations
+
+FINAL NORTH STAR
+The final application should allow an Executive Assistant to say:
+“Handle my day.”
+And the system should be able to:
+1. Understand the executive’s schedule.
+2. Review important communication.
+3. Identify priorities.
+4. Prepare meetings.
+5. Monitor commitments.
+6. Track tasks.
+7. Prepare documents.
+8. Conduct research.
+9. Generate briefings.
+10. Handle routine follow-ups.
+11. Detect problems.
+12. Alert the EA to things requiring human judgment.
+13. Remember what happened.
+14. Prepare for what comes next.
+The EA remains the decision-maker.
+The application becomes the memory, coordination layer, research assistant, meeting
+assistant, workflow engine and AI workforce behind them.
