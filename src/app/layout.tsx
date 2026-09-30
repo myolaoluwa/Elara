@@ -10,8 +10,21 @@ const display = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.BETTER_AUTH_URL || "https://elara-nu.vercel.app"),
+  applicationName: "Elara",
   title: { default: "Elara", template: "%s · Elara" },
   description: "The intelligent workspace for executive operations.",
+  openGraph: {
+    type: "website",
+    siteName: "Elara",
+    title: "Elara · Executive operations, intelligently organized",
+    description: "Prepare meetings, manage communication, coordinate travel, and keep every commitment moving.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Elara · Executive operations, intelligently organized",
+    description: "Prepare meetings, manage communication, coordinate travel, and keep every commitment moving.",
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
