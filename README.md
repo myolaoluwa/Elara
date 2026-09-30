@@ -23,6 +23,10 @@ Set `AI_PROVIDER` to `openai`, `openrouter`, `gemini`, `cerebras`, `xai` (or its
 
 Recorded-audio transcription currently uses OpenAI specifically and requires `OPENAI_API_KEY`, regardless of the text provider selection.
 
+## Transactional email
+
+Elara's environment contract is prepared for Brevo's transactional Email API. In `.env`, set `BREVO_API_KEY` to an API v3 key and set `BREVO_SENDER_EMAIL` to a sender address whose email or domain has been verified in Brevo. `BREVO_SENDER_NAME` defaults to `Elara`; `BREVO_REPLY_TO_EMAIL` and the three template ID variables are optional. Keep the API key server-side and configure the same variables in the hosting environment before enabling verification, password-reset, or invitation delivery.
+
 ## Checks
 
 ```bash
