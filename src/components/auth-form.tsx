@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, LoaderCircle, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, LoaderCircle, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -14,6 +14,7 @@ export function AuthForm({ mode, otpEnabled }: { mode: "sign-in" | "sign-up"; ot
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const isSignUp = mode === "sign-up";
 
   function finishSignIn() {
@@ -71,7 +72,7 @@ export function AuthForm({ mode, otpEnabled }: { mode: "sign-in" | "sign-up"; ot
     setPending(true);
     setError(null);
     try {
-      const code = String(new FormData(event.currentTarget).get("otp")).replace(/\D/g, "");
+      const code = String(new FormData(event.currentTarget).get("one-time-code")).replace(/\D/g, "");
       const result = challenge.type === "verify-email"
         ? await authClient.emailOtp.verifyEmail({ email: challenge.email, otp: code })
         : await authClient.twoFactor.verifyOtp({ code, trustDevice: true });
@@ -122,12 +123,12 @@ export function AuthForm({ mode, otpEnabled }: { mode: "sign-in" | "sign-up"; ot
       </section>
       <section className="auth-panel">
         {challenge ? (
-          <form className="auth-form" onSubmit={submitOTP}>
+          <form className="auth-form" autoComplete="off" onSubmit={submitOTP}>
             <button className="auth-back" type="button" onClick={() => { setChallenge(null); setError(null); setNotice(null); }}><ArrowLeft size={14} />Back</button>
             <p className="eyebrow">Identity verification</p>
             <h2>Enter your code.</h2>
             <p className="auth-intro">Use the six-digit code sent to <strong>{challenge.email}</strong>. It expires in five minutes.</p>
-            <label>Verification code<input name="otp" required autoFocus autoComplete="one-time-code" inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} placeholder="000000" /></label>
+            <label>Verification code<input name="one-time-code" type="text" required autoFocus autoComplete="one-time-code" inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} placeholder="000000" /></label>
             {error && <p className="form-error" role="alert">{error}</p>}
             {notice && <p className="auth-notice" role="status">{notice}</p>}
             <button className="auth-submit" disabled={pending} type="submit">
@@ -142,7 +143,7 @@ export function AuthForm({ mode, otpEnabled }: { mode: "sign-in" | "sign-up"; ot
             <p className="auth-intro">{isSignUp ? "Your verified account receives its own private workspace." : "Your session stays active; new devices require an emailed code."}</p>
             {isSignUp && <label>Full name<input name="name" required autoComplete="name" maxLength={100} placeholder="Racheal Adams" /></label>}
             <label>Email address<input name="email" required type="email" autoComplete="email" maxLength={254} placeholder="you@company.com" /></label>
-            <label>Password<input name="password" required type="password" autoComplete={isSignUp ? "new-password" : "current-password"} minLength={10} maxLength={128} placeholder="At least 10 characters" /></label>
+            <label>Password<div className="password-field"><input name="password" required type={passwordVisible ? "text" : "password"} autoComplete={isSignUp ? "new-password" : "current-password"} minLength={isSignUp ? 10 : undefined} maxLength={128} placeholder={isSignUp ? "At least 10 characters" : "Enter your password"} /><button className="password-visibility" type="button" aria-label={passwordVisible ? "Hide password" : "Show password"} title={passwordVisible ? "Hide password" : "Show password"} aria-pressed={passwordVisible} onClick={() => setPasswordVisible((visible) => !visible)}>{passwordVisible ? <EyeOff size={16} /> : <Eye size={16} />}</button></div></label>
             {!isSignUp && <Link className="auth-resend" href="/forgot-password">Forgot password?</Link>}
             {error && <p className="form-error" role="alert">{error}</p>}
             {notice && <p className="auth-notice" role="status">{notice}</p>}

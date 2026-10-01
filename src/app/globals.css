@@ -123,6 +123,11 @@ kbd { padding: 2px 6px; color: #8a928e; background: #fff; border: 1px solid #dfe
 .auth-form label, .task-composer label { display: grid; gap: 7px; margin-bottom: 17px; color: #4e5954; font-size: 10px; font-weight: 700; letter-spacing: .04em; }
 .auth-form input, .task-composer input, .task-composer textarea, .task-composer select { width: 100%; color: var(--ink); background: #fff; border: 1px solid #dfe5e1; border-radius: 9px; outline: none; font-size: 13px; font-weight: 400; letter-spacing: 0; }
 .auth-form input, .task-composer input, .task-composer select { height: 43px; padding: 0 13px; }
+.password-field { position: relative; }
+.password-field input { padding-right: 45px; }
+.password-visibility { position: absolute; top: 50%; right: 7px; width: 30px; height: 30px; display: grid; place-items: center; transform: translateY(-50%); color: #68736e; background: transparent; border: 0; border-radius: 6px; cursor: pointer; }
+.password-visibility:hover { color: var(--ink); background: #f0f3f1; }
+.password-visibility:focus-visible { outline: 2px solid #7b9d8e; outline-offset: 1px; }
 .task-composer textarea { resize: vertical; padding: 12px 13px; line-height: 1.5; }
 .auth-form input:focus, .task-composer input:focus, .task-composer textarea:focus, .task-composer select:focus { border-color: #7b9d8e; box-shadow: 0 0 0 3px rgba(57,108,85,.08); }
 .auth-submit { width: 100%; height: 44px; display: flex; align-items: center; justify-content: center; gap: 9px; margin-top: 8px; color: white; background: var(--green); border: 0; border-radius: 10px; cursor: pointer; font-size: 12px; font-weight: 700; }
