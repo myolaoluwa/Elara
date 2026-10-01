@@ -41,25 +41,57 @@ export function AppShell({ children, workspaceName, userName }: { children: Reac
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
+  const [installMode, setInstallMode] = useState<"native" | "manual" | null>(null);
   const sidebarRef = useRef<HTMLElement>(null);
   const collapsed = useSyncExternalStore(subscribeToSidebarPreference, getSidebarPreference, getServerSidebarPreference);
   const currentModule = modules.find(({ slug }) => slug === "dashboard" ? pathname === "/" : pathname === `/${slug}` || pathname.startsWith(`/${slug}/`));
 
   useEffect(() => {
+    const setStandaloneState = () => {
+      const isStandalone = window.matchMedia("(display-mode: standalone)").matches || Boolean((navigator as Navigator & { standalone?: boolean }).standalone);
+      const isSecure = window.isSecureContext || window.location.hostname === "localhost";
+      const supportsNativePrompt = "beforeinstallprompt" in window;
+
+      if (!isStandalone && isSecure && supportsNativePrompt) {
+        setInstallMode("native");
+        return;
+      }
+
+      if (!isStandalone && isSecure) {
+        setInstallMode("manual");
+      } else {
+        setInstallMode(null);
+      }
+    };
+
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
       setInstallEvent(event as BeforeInstallPromptEvent);
+      setInstallMode("native");
     };
 
+    const handleAppInstalled = () => setInstallMode(null);
+
+    setStandaloneState();
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
   }, []);
 
   async function handleInstallClick() {
-    if (!installEvent) return;
-    installEvent.prompt();
-    await installEvent.userChoice;
-    setInstallEvent(null);
+    if (installEvent) {
+      installEvent.prompt();
+      await installEvent.userChoice;
+      setInstallEvent(null);
+      return;
+    }
+
+    if (installMode === "manual") {
+      window.alert("Use your browser menu: Share or Menu → Add to Home Screen.");
+    }
   }
 
   useEffect(() => {
@@ -132,7 +164,11 @@ export function AppShell({ children, workspaceName, userName }: { children: Reac
           <span className="topbar-location">{currentModule?.label || "Workspace"}</span>
           <Link className="search-trigger" href="/search"><Search size={17} /><span>Search your workspace</span><kbd>⌘ K</kbd></Link>
           <div className="topbar-actions">
-            {installEvent ? <button type="button" className="quiet-button" onClick={handleInstallClick}><Download size={15} />Install app</button> : null}
+            {(installMode === "native" || installMode === "manual") && (
+              <button type="button" className="quiet-button" onClick={handleInstallClick}>
+                <Download size={15} />{installMode === "native" ? "Install app" : "Add to Home Screen"}
+              </button>
+            )}
             <Link className="ask-elara" href="/command" aria-label="Ask Elara"><ElaraMark className="assistant-mark" /><span>Ask Elara</span></Link>
             <Link className="icon-button" href="/activity" aria-label="Activity and notifications"><Bell size={18} /></Link>
             <Link className="user-avatar" href="/settings" aria-label={`${userName} profile settings`} title={userName}>{userName.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</Link>

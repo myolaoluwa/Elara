@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { getDueReminders, markReminderFired } from "@/lib/reminder-engine";
+import { getDueReminders, loadReminders, markReminderFired } from "@/lib/reminder-engine";
+
+function syncRemindersToWorker() {
+  if (!("serviceWorker" in navigator) || !navigator.serviceWorker.controller) return;
+  navigator.serviceWorker.controller.postMessage({
+    type: "SYNC_REMINDERS",
+    reminders: loadReminders(),
+  });
+}
 
 export function ReminderProvider() {
   useEffect(() => {
@@ -10,7 +18,14 @@ export function ReminderProvider() {
     const registerServiceWorker = async () => {
       if (!("serviceWorker" in navigator)) return;
       try {
-        await navigator.serviceWorker.register("/sw.js");
+        const registration = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+        await navigator.serviceWorker.ready;
+        if (registration.active) {
+          registration.active.postMessage({
+            type: "SYNC_REMINDERS",
+            reminders: loadReminders(),
+          });
+        }
       } catch {
         // Browser may not support service workers for this context.
       }
@@ -32,14 +47,22 @@ export function ReminderProvider() {
         }
 
         markReminderFired(reminder.id, new Date());
+        syncRemindersToWorker();
       });
     };
 
-    void registerServiceWorker();
+    const handleStorageSync = () => syncRemindersToWorker();
+    window.addEventListener("storage", handleStorageSync);
 
+    void registerServiceWorker();
+    syncRemindersToWorker();
     triggerDueReminders();
-    const interval = window.setInterval(triggerDueReminders, 15_000);
-    return () => window.clearInterval(interval);
+
+    const interval = window.setInterval(triggerDueReminders, 10_000);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("storage", handleStorageSync);
+    };
   }, []);
 
   return null;
