@@ -3,6 +3,7 @@
 import { ArrowUp, LoaderCircle, UserRound } from "lucide-react";
 import Image from "next/image";
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -14,6 +15,7 @@ function ElaraAvatar({ className = "" }: { className?: string }) {
 }
 
 export function CommandCenter({ initialConversationId = null, initialMessages = [], history = [] }: { initialConversationId?: string | null; initialMessages?: Message[]; history?: { id: string; title: string | null; updatedAt: string }[] }) {
+  const router = useRouter();
   const [conversationId, setConversationId] = useState(initialConversationId);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [pending, setPending] = useState(false);
@@ -26,6 +28,7 @@ export function CommandCenter({ initialConversationId = null, initialMessages = 
     try {
       const response = await fetch("/api/ai/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ prompt, conversationId }) });
       if (!response.ok || !response.body) throw new Error("AI request failed");
+      const workspaceUpdated = response.headers.get("x-workspace-updated") === "true";
       setConversationId(response.headers.get("x-conversation-id"));
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
@@ -35,6 +38,7 @@ export function CommandCenter({ initialConversationId = null, initialMessages = 
         const delta = decoder.decode(value, { stream: true });
         setMessages((current) => current.map((message, index) => index === current.length - 1 ? { ...message, content: message.content + delta } : message));
       }
+      if (workspaceUpdated) router.refresh();
     } catch {
       setMessages((current) => [...current.slice(0, -1), { role: "assistant", content: "I couldn’t process that request." }]);
     } finally {

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getTextAIProvider } from "@/lib/ai/provider-factory";
 import { buildWorkspaceContext } from "@/lib/ai/workspace-context";
 import { v1Schemas, type V1Resource } from "./schemas";
+import { searchTavily, type ResearchSource } from "@/lib/research/tavily";
 
 type Input = Record<string, unknown>;
 
@@ -152,10 +153,18 @@ export async function listV1Records(resource: V1Resource, organizationId: string
 }
 
 async function createResearch(organizationId: string, actorUserId: string, input: Input) {
-  const sources = await searchSources(`${input.topic}${input.question ? ` ${input.question}` : ""}`);
+  let sources: ResearchSource[] = [];
+  let searchFailed = false;
+  try {
+    sources = await searchTavily(`${input.topic}${input.question ? ` ${input.question}` : ""}`);
+  } catch {
+    searchFailed = true;
+  }
   let summary = sources.length
     ? `Collected ${sources.length} external sources. Review the sourced findings below before relying on them.`
-    : "No web search provider is configured. Add TAVILY_API_KEY to collect external sources, or use this report as a research request draft.";
+    : searchFailed
+      ? "External research could not be completed. Verify the Tavily configuration or usage limit and try again."
+      : "No web search provider is configured. Add TAVILY_API_KEY to collect external sources, or use this report as a research request draft.";
   let findings: string[] = [];
   const ai = getTextAIProvider();
   if (sources.length && ai.provider) {
@@ -180,32 +189,9 @@ async function createResearch(organizationId: string, actorUserId: string, input
     summary,
     findingsJson: JSON.stringify(findings),
     sourcesJson: JSON.stringify(sources),
-    status: sources.length ? "COMPLETE" : "DRAFT",
+    status: sources.length ? "COMPLETE" : searchFailed ? "FAILED" : "DRAFT",
     createdById: actorUserId,
   } });
-}
-
-async function searchSources(query: string) {
-  const apiKey = process.env.TAVILY_API_KEY?.trim();
-  if (!apiKey) return [] as { title: string; url: string; excerpt: string }[];
-  const response = await fetch("https://api.tavily.com/search", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ api_key: apiKey, query, search_depth: "advanced", max_results: 6, include_answer: false, include_raw_content: false }),
-    signal: AbortSignal.timeout(25_000),
-  });
-  if (!response.ok) throw new Error("Research search provider failed");
-  const payload = await response.json() as { results?: { title?: string; url?: string; content?: string }[] };
-  return (payload.results || []).filter((item) => item.title && isHttpUrl(item.url)).map((item) => ({
-    title: item.title!.slice(0, 300),
-    url: item.url!,
-    excerpt: (item.content || "").slice(0, 2_000),
-  }));
-}
-
-function isHttpUrl(value: string | undefined) {
-  if (!value) return false;
-  try { return ["http:", "https:"].includes(new URL(value).protocol); } catch { return false; }
 }
 
 async function createBriefing(organizationId: string, actorUserId: string, input: Input) {

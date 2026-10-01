@@ -367,10 +367,25 @@ function safeError(error: unknown) {
 function formatResults(results: ToolResult[]) {
   const completed = results.filter((result) => result.ok);
   const failed = results.filter((result) => !result.ok);
-  const lines = completed.map((result) => `- **${result.label}** · ${humanizeTool(result.tool)}`);
+  const lines = completed.map((result) => `- **${result.label}** · ${humanizeTool(result.tool)}${recordPath(result) ? ` · [Open record](${recordPath(result)})` : ""}`);
   const heading = completed.length ? `Done. I completed ${completed.length} workspace action${completed.length === 1 ? "" : "s"}:` : "I could not complete the requested workspace actions.";
   const failures = failed.length ? `\n\nNeeds attention:\n${failed.map((result) => `- **${result.label}**: ${result.error}`).join("\n")}` : "";
   return `${heading}${lines.length ? `\n\n${lines.join("\n")}` : ""}${failures}`;
+}
+
+function recordPath(result: ToolResult) {
+  if (result.tool.includes("task")) return "/tasks";
+  if (result.tool.includes("calendar_event")) return result.id ? `/calendar/${result.id}` : "/calendar";
+  const paths: Partial<Record<PlannedOperation["tool"], string>> = {
+    create_meeting: "/meetings", create_follow_up: "/follow-ups", resolve_follow_up: "/follow-ups",
+    create_contact: "/contacts", update_contact: "/contacts", create_project: "/projects", update_project: "/projects",
+    record_decision: "/decisions", record_commitment: "/commitments", create_meeting_note: "/meetings",
+    save_memory: "/memory", update_memory: "/memory", create_notification: "/activity",
+    create_research: "/research", create_briefing: "/briefings", create_travel: "/travel",
+    create_expense: "/expenses", create_expense_report: "/expense-reports", create_invoice: "/invoices",
+    create_vendor: "/vendors", create_event: "/events", create_automation: "/automations",
+  };
+  return paths[result.tool] || null;
 }
 
 function extractJson(value: string) {

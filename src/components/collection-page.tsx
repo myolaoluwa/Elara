@@ -25,19 +25,7 @@ export type CollectionRecord = {
   resolved?: boolean;
 };
 
-export function CollectionPage({
-  eyebrow,
-  title,
-  subtitle,
-  action,
-  resource,
-  fields,
-  initialRecords,
-  emptyTitle,
-  emptyBody,
-  allowResolve = false,
-  apiBase = "/api/operations",
-}: {
+type CollectionPageProps = {
   eyebrow: string;
   title: string;
   subtitle: string;
@@ -49,7 +37,26 @@ export function CollectionPage({
   emptyBody: string;
   allowResolve?: boolean;
   apiBase?: string;
-}) {
+};
+
+export function CollectionPage(props: CollectionPageProps) {
+  const version = props.initialRecords.map((record) => `${record.id}:${record.badge || ""}:${record.resolved || false}`).join("|");
+  return <CollectionPageState key={version} {...props} />;
+}
+
+function CollectionPageState({
+  eyebrow,
+  title,
+  subtitle,
+  action,
+  resource,
+  fields,
+  initialRecords,
+  emptyTitle,
+  emptyBody,
+  allowResolve = false,
+  apiBase = "/api/operations",
+}: CollectionPageProps) {
   const router = useRouter();
   const [records, setRecords] = useState(initialRecords);
   const [open, setOpen] = useState(false);

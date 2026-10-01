@@ -21,6 +21,11 @@ type TaskItem = {
 const filters = ["OPEN", "TODO", "IN_PROGRESS", "BLOCKED", "DONE"] as const;
 
 export function TaskBoard({ initialTasks }: { initialTasks: TaskItem[] }) {
+  const version = initialTasks.map((task) => `${task.id}:${task.updatedAt}`).join("|");
+  return <TaskBoardState key={version} initialTasks={initialTasks} />;
+}
+
+function TaskBoardState({ initialTasks }: { initialTasks: TaskItem[] }) {
   const router = useRouter();
   const [tasks, setTasks] = useState(initialTasks);
   const [filter, setFilter] = useState<(typeof filters)[number]>("OPEN");

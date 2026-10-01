@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import { getWorkspaceContext } from "@/lib/workspace";
 import { prisma } from "@/lib/prisma";
 import { getTextAIProvider } from "@/lib/ai/provider-factory";
@@ -51,7 +52,8 @@ export async function POST(request: Request) {
           prisma.aIConversation.update({ where: { id: conversation.id }, data: { updatedAt: new Date() } }),
           prisma.aIAction.create({ data: { organizationId, conversationId: conversation.id, toolName: `email_${result.action}`, permission: "EXECUTE", inputJson: JSON.stringify({ prompt: parsed.data.prompt }), resultJson: JSON.stringify({ count: result.count, status: result.action, rationale: result.reason }), approvalStatus: result.action === "draft" ? "PENDING" : "APPROVED", approverId: result.action === "draft" ? null : authContext.user.id, executedAt: result.action === "draft" ? null : new Date() } }),
         ]);
-        return new Response(result.text, { headers: { "content-type": "text/plain; charset=utf-8", "x-content-type-options": "nosniff", "cache-control": "no-store", "x-conversation-id": conversation.id } });
+        revalidatePath("/", "layout");
+        return new Response(result.text, { headers: { "content-type": "text/plain; charset=utf-8", "x-content-type-options": "nosniff", "cache-control": "no-store", "x-conversation-id": conversation.id, "x-workspace-updated": "true" } });
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : "I could not prepare that email safely.";
@@ -76,7 +78,9 @@ export async function POST(request: Request) {
           prisma.aIConversation.update({ where: { id: conversation.id }, data: { updatedAt: new Date() } }),
           prisma.activityLog.create({ data: { organizationId, actorUserId: authContext.user.id, actorType: "ai", action: "ai.workspace-actions.processed", entityType: "ai-conversation", entityId: conversation.id, source: "command", resultJson: JSON.stringify({ completed: result.results.filter((item) => item.ok).length, failed: result.results.filter((item) => !item.ok).length }) } }),
         ]);
-        return new Response(result.text, { headers: { "content-type": "text/plain; charset=utf-8", "x-content-type-options": "nosniff", "cache-control": "no-store", "x-conversation-id": conversation.id } });
+        const workspaceUpdated = result.results.some((item) => item.ok);
+        if (workspaceUpdated) revalidatePath("/", "layout");
+        return new Response(result.text, { headers: { "content-type": "text/plain; charset=utf-8", "x-content-type-options": "nosniff", "cache-control": "no-store", "x-conversation-id": conversation.id, ...(workspaceUpdated ? { "x-workspace-updated": "true" } : {}) } });
       }
     } catch {
       const message = "I couldn’t safely complete that workspace action. Please include the exact record, date, and time you want me to use.";
