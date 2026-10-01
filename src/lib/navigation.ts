@@ -1,4 +1,4 @@
-import { Activity, Bot, Brain, BriefcaseBusiness, CalendarDays, CheckSquare2, FileSearch, FileText, HandCoins, Inbox, LayoutDashboard, MapPinned, MessageSquareText, Search, Settings, Sparkles, TicketCheck, Users, Video, Workflow } from "lucide-react";
+import { Activity, SlidersHorizontal, Brain, BriefcaseBusiness, CalendarDays, CheckSquare2, FileSearch, FileText, HandCoins, Inbox, LayoutDashboard, MapPinned, MessageSquareText, Search, Settings, ClipboardList, TicketCheck, Users, Video, Workflow } from "lucide-react";
 
 export const modules = [
   { slug: "dashboard", label: "Dashboard", icon: LayoutDashboard, description: "A focused view of today’s executive operations.", emptyTitle: "Your day starts here", emptyBody: "Connect your work to create a grounded daily view.", action: null },
@@ -11,7 +11,7 @@ export const modules = [
   { slug: "contacts", label: "Contacts", icon: Users, description: "Build durable context around people, companies, and relationships.", emptyTitle: "Add the people who matter", emptyBody: "Contact records will connect meetings, tasks, decisions, and communication over time.", action: "Add contact" },
   { slug: "documents", label: "Documents", icon: FileText, description: "Keep executive documents organized and ready for analysis.", emptyTitle: "No documents yet", emptyBody: "Upload a file to keep it with the workspace. Analysis is only generated from its actual contents.", action: "Upload document" },
   { slug: "research", label: "Research", icon: FileSearch, description: "Build source-backed research on companies, people, markets, products, and destinations.", emptyTitle: "No research reports yet", emptyBody: "Create a research request. Elara separates sourced facts from interpretation and keeps the supporting links.", action: "New research" },
-  { slug: "briefings", label: "Briefings", icon: Sparkles, description: "Combine workspace context into focused daily, meeting, travel, and custom briefs.", emptyTitle: "No saved briefings", emptyBody: "Generate a briefing from current calendar, communication, documents, meetings, tasks, decisions, and research.", action: "Generate briefing" },
+  { slug: "briefings", label: "Briefings", icon: ClipboardList, description: "Combine workspace context into focused daily, meeting, travel, and custom briefs.", emptyTitle: "No saved briefings", emptyBody: "Generate a briefing from current calendar, communication, documents, meetings, tasks, decisions, and research.", action: "Generate briefing" },
   { slug: "travel", label: "Travel", icon: MapPinned, description: "Coordinate itineraries, reservations, transport, documents, time zones, and reminders.", emptyTitle: "No travel plans", emptyBody: "Create a trip to begin assembling an executive travel pack.", action: "Plan a trip" },
   { slug: "expenses", label: "Expenses", icon: HandCoins, description: "Track receipts, extracted expenses, reports, reimbursements, and invoices.", emptyTitle: "No expenses yet", emptyBody: "Record an expense or upload a receipt in Documents and connect it to a report.", action: "Add expense" },
   { slug: "vendors", label: "Vendors", icon: BriefcaseBusiness, description: "Manage vendor contacts, quotes, contracts, payments, renewals, and service history.", emptyTitle: "No vendors yet", emptyBody: "Add a vendor to keep commercial history and renewal obligations in one place.", action: "Add vendor" },
@@ -19,10 +19,17 @@ export const modules = [
   { slug: "memory", label: "Memory", icon: Brain, description: "Keep projects, decisions, and commitments connected.", emptyTitle: "Memory starts with confirmed facts", emptyBody: "Add a project, decision, or commitment to make it available across Elara.", action: "Add memory" },
   { slug: "search", label: "Global search", icon: Search, description: "Search the workspace without losing source context.", emptyTitle: "Search your workspace", emptyBody: "Find matching tasks, contacts, meetings, email, documents, and decisions.", action: null },
   { slug: "activity", label: "Activity", icon: Activity, description: "Review user and AI actions across the workspace.", emptyTitle: "No activity yet", emptyBody: "Important actions and approvals will appear here.", action: null },
-  { slug: "automations", label: "Automations", icon: Bot, description: "Review and control repeatable AI-assisted workflows.", emptyTitle: "Automation stays supervised", emptyBody: "Configured workflows will show their trigger, actions, approvals, and complete audit history here.", action: "Create automation" },
+  { slug: "automations", label: "Automations", icon: SlidersHorizontal, description: "Review and control repeatable AI-assisted workflows.", emptyTitle: "Automation stays supervised", emptyBody: "Configured workflows will show their trigger, actions, approvals, and complete audit history here.", action: "Create automation" },
   { slug: "settings", label: "Settings", icon: Settings, description: "Manage workspace, executive preferences, people, and access.", emptyTitle: "Shape how Elara works", emptyBody: "Workspace preferences and secure integrations will be configured here.", action: "Configure workspace" },
 ] as const;
 
 export function moduleBySlug(slug: string) {
   return modules.find((module) => module.slug === slug);
 }
+
+export const navigationGroups = [
+  { label: "Workspace", slugs: ["dashboard", "command", "inbox", "calendar", "meetings", "tasks"] },
+  { label: "Operations", slugs: ["follow-ups", "contacts", "travel", "expenses", "vendors", "events"] },
+  { label: "Knowledge", slugs: ["documents", "research", "briefings", "memory"] },
+  { label: "Workspace controls", slugs: ["automations", "activity", "settings"] },
+] as const;

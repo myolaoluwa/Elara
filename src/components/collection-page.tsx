@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowUpRight, Check, LoaderCircle, Plus, X } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Modal } from "@/components/modal";
 
 export type CollectionField = {
   name: string;
@@ -115,7 +116,7 @@ function CollectionPageState({
                   {record.badge && <span className="record-badge">{record.badge}</span>}
                   {record.href && <Link href={record.href} aria-label={`Open ${record.title}`}><ArrowUpRight size={15} /></Link>}
                 </div>
-                <h2>{record.title}</h2>
+                <h2>{record.href ? <Link href={record.href}>{record.title}</Link> : record.title}</h2>
                 {record.subtitle && <p>{record.subtitle}</p>}
                 {record.meta && <div className="record-meta">{record.meta.filter(Boolean).map((item) => <span key={item}>{item}</span>)}</div>}
                 {allowResolve && !record.resolved && <button className="resolve-button" onClick={() => resolve(record.id)}><Check size={13} />Mark resolved</button>}
@@ -125,16 +126,16 @@ function CollectionPageState({
         )}
       </section>
       {open && (
-        <div className="modal-layer" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
+        <Modal labelledBy="collection-dialog-title" onClose={() => setOpen(false)} busy={pending}>
           <form className="task-composer collection-composer" onSubmit={submit}>
-            <header><div><p className="eyebrow">{eyebrow}</p><h2>{action}</h2></div><button type="button" aria-label="Close" onClick={() => setOpen(false)}><X size={18} /></button></header>
+            <header><div><p className="eyebrow">{eyebrow}</p><h2 id="collection-dialog-title">{action}</h2></div><button type="button" disabled={pending} aria-label="Close" onClick={() => setOpen(false)}><X size={18} /></button></header>
             <div className="collection-form-fields">
               {fields.map((field) => <Field key={field.name} field={field} />)}
             </div>
-            {error && <p className="form-error">{error}</p>}
-            <footer><button className="quiet-modal-button" type="button" onClick={() => setOpen(false)}>Cancel</button><button className="primary-button" disabled={pending}>{pending ? <LoaderCircle className="spin" size={16} /> : <Plus size={16} />}{action}</button></footer>
+            {error && <p className="form-error" role="alert">{error}</p>}
+            <footer><button className="quiet-modal-button" disabled={pending} type="button" onClick={() => setOpen(false)}>Cancel</button><button className="primary-button" disabled={pending}>{pending ? <LoaderCircle className="spin" size={16} /> : <Plus size={16} />}{action}</button></footer>
           </form>
-        </div>
+        </Modal>
       )}
     </>
   );

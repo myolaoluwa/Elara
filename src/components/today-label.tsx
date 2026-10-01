@@ -3,14 +3,18 @@
 import { useSyncExternalStore } from "react";
 
 export function TodayLabel() {
-  const label = new Intl.DateTimeFormat(undefined, {
+  const timestamp = useSyncExternalStore(subscribeToClock, getDateSnapshot, getServerDateSnapshot);
+  const label = timestamp ? new Intl.DateTimeFormat("en", {
     weekday: "long",
     month: "long",
     day: "numeric",
-  }).format(new Date());
+  }).format(new Date(timestamp)) : "Today";
 
   return <p className="eyebrow">{label}</p>;
 }
+
+function getDateSnapshot() { return Math.floor(Date.now() / 30_000) * 30_000; }
+function getServerDateSnapshot() { return 0; }
 
 function subscribeToClock(onChange: () => void) {
   const interval = window.setInterval(onChange, 30_000);

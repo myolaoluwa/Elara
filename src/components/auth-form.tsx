@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Eye, EyeOff, LoaderCircle, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { authClient } from "@/lib/auth-client";
@@ -115,7 +115,7 @@ export function AuthForm({ mode, otpEnabled }: { mode: "sign-in" | "sign-up"; ot
       <section className="auth-story">
         <Link href="/sign-in" className="brand auth-brand"><ElaraBrand /></Link>
         <div>
-          <span className="auth-orbit"><Sparkles size={20} /></span>
+          <span className="auth-orbit"><ShieldCheck size={20} /></span>
           <p className="eyebrow">Executive operations, composed</p>
           <h1>The work behind the work, finally in one place.</h1>
           <p>Keep meetings, communication, tasks, and commitments connected—without losing human control.</p>

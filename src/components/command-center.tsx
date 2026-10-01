@@ -2,8 +2,9 @@
 
 import { ArrowUp, LoaderCircle, UserRound } from "lucide-react";
 import Image from "next/image";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { LocalDateTime } from "@/components/local-date-time";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -19,9 +20,17 @@ export function CommandCenter({ initialConversationId = null, initialMessages = 
   const [conversationId, setConversationId] = useState(initialConversationId);
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [pending, setPending] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const threadRef = useRef<HTMLDivElement>(null);
+  const followLatest = useRef(true);
+
+  useEffect(() => {
+    if (followLatest.current && threadRef.current) threadRef.current.scrollTop = threadRef.current.scrollHeight;
+  }, [messages]);
 
   async function ask(prompt: string) {
     if (!prompt.trim() || pending) return;
+    followLatest.current = true;
     setPending(true);
     const userMessage: Message = { role: "user", content: prompt.trim() };
     setMessages((current) => [...current, userMessage, { role: "assistant", content: "" }]);
@@ -48,22 +57,21 @@ export function CommandCenter({ initialConversationId = null, initialMessages = 
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = event.currentTarget;
-    const input = new FormData(form).get("prompt")?.toString() || "";
-    form.reset();
-    void ask(input);
+    if (!prompt.trim() || pending) return;
+    void ask(prompt);
+    setPrompt("");
   }
 
   return (
     <div className="command-layout">
       <section className="command-main panel">
         <header className="command-header"><ElaraAvatar className="header-avatar" /><div><p className="eyebrow">Command center</p><h1>Ask Elara</h1><p>Answers stay grounded in your workspace.</p></div></header>
-        <div className="message-thread">
+        <div className="message-thread" ref={threadRef} onScroll={() => { const thread = threadRef.current; if (thread) followLatest.current = thread.scrollHeight - thread.scrollTop - thread.clientHeight < 80; }}>
           {messages.length === 0 ? <div className="command-welcome"><ElaraAvatar className="welcome-avatar" /><h2>What should we get ahead of?</h2><p>Ask questions or create tasks, reminders, calendar events, meetings, follow-ups, contacts, projects, research, travel plans, and other workspace records.</p><div className="suggestion-grid">{suggestions.map((suggestion) => <button onClick={() => ask(suggestion)} key={suggestion}>{suggestion}</button>)}</div></div> : messages.map((message, index) => <article className={`chat-message ${message.role}`} key={`${message.role}-${index}`}>{message.role === "user" ? <span className="user-avatar"><UserRound size={15} /></span> : <ElaraAvatar className="message-avatar" />}<div className="chat-content">{message.content ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown> : <LoaderCircle className="spin" size={16} />}</div></article>)}
         </div>
-        <form className="command-input" onSubmit={submit}><textarea name="prompt" required rows={1} placeholder="Ask about your workspace…" /><button disabled={pending} aria-label="Send"><ArrowUp size={17} /></button></form>
+        <form className="command-input" onSubmit={submit}><label className="sr-only" htmlFor="elara-prompt">Message Elara</label><textarea id="elara-prompt" name="prompt" value={prompt} onChange={(event) => setPrompt(event.target.value)} maxLength={8000} required rows={2} placeholder="Ask Elara or describe what needs doing…" onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); event.currentTarget.form?.requestSubmit(); } }} /><button disabled={pending || !prompt.trim()} aria-label="Send message"><ArrowUp size={18} /></button><p className="composer-hint"><span>Enter to send · Shift + Enter for a new line</span><span role="status">{pending ? "Elara is responding…" : "Review important actions before proceeding."}</span></p></form>
       </section>
-      <aside className="command-side"><div className="panel grounding-card"><p className="eyebrow">Grounding</p><h2>Workspace facts only</h2><p>If a detail isn’t in connected or imported data, Elara will say so. Read actions are automatic; important mutations remain supervised.</p></div><div className="panel conversation-history"><p className="eyebrow">Recent conversations</p>{history.length ? history.map((item) => <a className={item.id === conversationId ? "active" : ""} href={`/command?conversation=${item.id}`} key={item.id}>{item.title || "Untitled conversation"}<span>{new Date(item.updatedAt).toLocaleDateString()}</span></a>) : <p>No conversations yet.</p>}</div></aside>
+      <aside className="command-side"><div className="panel grounding-card"><p className="eyebrow">Grounding</p><h2>Workspace facts only</h2><p>If a detail isn’t in connected or imported data, Elara will say so. Read actions are automatic; important mutations remain supervised.</p></div><div className="panel conversation-history"><p className="eyebrow">Recent conversations</p>{history.length ? history.map((item) => <a className={item.id === conversationId ? "active" : ""} href={`/command?conversation=${item.id}`} key={item.id}>{item.title || "Untitled conversation"}<span><LocalDateTime value={item.updatedAt} dateOnly /></span></a>) : <p>No conversations yet.</p>}</div></aside>
     </div>
   );
 }

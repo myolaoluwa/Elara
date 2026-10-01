@@ -1,8 +1,9 @@
 "use client";
 
-import { Calendar, Check, ChevronDown, Circle, Flag, LoaderCircle, Plus, X } from "lucide-react";
+import { Calendar, Check, ChevronDown, Flag, LoaderCircle, Plus, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Modal } from "@/components/modal";
 
 type TaskStatus = "TODO" | "IN_PROGRESS" | "BLOCKED" | "DONE" | "CANCELLED";
 type TaskPriority = "LOW" | "NORMAL" | "HIGH" | "CRITICAL";
@@ -89,7 +90,7 @@ function TaskBoardState({ initialTasks }: { initialTasks: TaskItem[] }) {
   }
 
   const openCount = tasks.filter((task) => !["DONE", "CANCELLED"].includes(task.status)).length;
-  const overdueCount = tasks.filter((task) => task.dueAt && new Date(task.dueAt) < new Date() && task.status !== "DONE").length;
+  const overdueCount = tasks.filter((task) => task.dueAt && new Date(task.dueAt) < new Date() && !["DONE", "CANCELLED"].includes(task.status)).length;
   const doneCount = tasks.filter((task) => task.status === "DONE").length;
 
   return (
@@ -108,7 +109,7 @@ function TaskBoardState({ initialTasks }: { initialTasks: TaskItem[] }) {
       <section className="panel task-panel">
         <header className="task-toolbar">
           <div className="task-filters">
-            {filters.map((item) => <button key={item} className={filter === item ? "selected" : ""} onClick={() => setFilter(item)}>{formatStatus(item)}</button>)}
+            {filters.map((item) => <button key={item} aria-pressed={filter === item} className={filter === item ? "selected" : ""} onClick={() => setFilter(item)}>{formatStatus(item)}</button>)}
           </div>
           <span>{visible.length} {visible.length === 1 ? "task" : "tasks"}</span>
         </header>
@@ -123,19 +124,19 @@ function TaskBoardState({ initialTasks }: { initialTasks: TaskItem[] }) {
       </section>
 
       {composerOpen && (
-        <div className="modal-layer" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setComposerOpen(false); }}>
+        <Modal labelledBy="new-task-title" onClose={() => setComposerOpen(false)} busy={pending}>
           <form className="task-composer" onSubmit={createTask}>
-            <header><div><p className="eyebrow">New task</p><h2>Capture what needs doing.</h2></div><button type="button" aria-label="Close" onClick={() => setComposerOpen(false)}><X size={18} /></button></header>
-            <label>Task<input name="title" autoFocus required maxLength={180} placeholder="e.g. Send the board briefing" /></label>
+            <header><div><p className="eyebrow">New task</p><h2 id="new-task-title">Create a task</h2></div><button type="button" disabled={pending} aria-label="Close" onClick={() => setComposerOpen(false)}><X size={18} /></button></header>
+            <label>Task<input name="title" required maxLength={180} placeholder="e.g. Send the board briefing" /></label>
             <label>Notes<textarea name="notes" rows={4} maxLength={5000} placeholder="Add useful context, not just reminders." /></label>
             <div className="form-grid">
               <label>Due date<input name="dueAt" type="date" /></label>
               <label>Priority<select name="priority" defaultValue="NORMAL"><option value="LOW">Low</option><option value="NORMAL">Normal</option><option value="HIGH">High</option><option value="CRITICAL">Critical</option></select></label>
             </div>
             {error && <p className="form-error" role="alert">{error}</p>}
-            <footer><button className="quiet-modal-button" type="button" onClick={() => setComposerOpen(false)}>Cancel</button><button className="primary-button" disabled={pending} type="submit">{pending ? <LoaderCircle className="spin" size={16} /> : <Plus size={16} />}Create task</button></footer>
+            <footer><button className="quiet-modal-button" disabled={pending} type="button" onClick={() => setComposerOpen(false)}>Cancel</button><button className="primary-button" disabled={pending} type="submit">{pending ? <LoaderCircle className="spin" size={16} /> : <Plus size={16} />}Create task</button></footer>
           </form>
-        </div>
+        </Modal>
       )}
     </>
   );
@@ -145,7 +146,7 @@ function TaskRow({ task, onStatus }: { task: TaskItem; onStatus: (id: string, st
   const done = task.status === "DONE";
   return (
     <article className={`task-row ${done ? "is-done" : ""}`}>
-      <button className="task-check" aria-label={done ? "Reopen task" : "Complete task"} onClick={() => onStatus(task.id, done ? "TODO" : "DONE")}>{done ? <Check size={14} /> : <Circle size={16} />}</button>
+      <button className="task-check" aria-label={`${done ? "Reopen" : "Complete"} ${task.title}`} aria-pressed={done} onClick={() => onStatus(task.id, done ? "TODO" : "DONE")}>{done && <Check size={14} />}</button>
       <div className="task-main"><h3>{task.title}</h3>{task.notes && <p>{task.notes}</p>}<div className="task-meta">{task.dueAt && <span><Calendar size={12} />{formatDate(task.dueAt)}</span>}<span className={`priority-${task.priority.toLowerCase()}`}><Flag size={12} />{formatStatus(task.priority)}</span>{task.owner && <span>{task.owner.name}</span>}</div></div>
       <label className="status-select"><span className="sr-only">Task status</span><select value={task.status} onChange={(event) => onStatus(task.id, event.target.value as TaskStatus)}><option value="TODO">To do</option><option value="IN_PROGRESS">In progress</option><option value="BLOCKED">Blocked</option><option value="DONE">Done</option><option value="CANCELLED">Cancelled</option></select><ChevronDown size={13} /></label>
     </article>
@@ -157,5 +158,5 @@ function formatStatus(value: string) {
 }
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(new Date(value));
+  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", timeZone: "UTC" }).format(new Date(value));
 }
