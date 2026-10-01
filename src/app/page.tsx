@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, CalendarDays, Check, Clock3, Mail, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { TodayLabel } from "@/components/today-label";
+import { DashboardGreeting, TodayLabel } from "@/components/today-label";
 import { prisma } from "@/lib/prisma";
 import { requireWorkspaceContext } from "@/lib/workspace";
 
@@ -34,7 +34,7 @@ export default async function DashboardPage() {
     : "Your workspace has no scheduled events, due tasks, or attention items today.";
 
   return <AppShell workspaceName={context.organization.name} userName={context.user.name}>
-    <div className="page-heading"><div><TodayLabel /><h1>Good morning, {context.user.name.split(" ")[0]}.</h1><p className="page-subtitle">Here’s the shape of your executive’s day.</p></div><Link className="primary-button" href="/command"><Sparkles size={16} />Prepare my day</Link></div>
+    <div className="page-heading"><div><TodayLabel /><DashboardGreeting name={context.user.name.split(" ")[0]} /><p className="page-subtitle">Here’s the shape of your executive’s day.</p></div><Link className="primary-button" href="/command"><Sparkles size={16} />Prepare my day</Link></div>
     <section className="briefing-card"><div className="briefing-mark"><Sparkles size={20} /></div><div className="briefing-copy"><div className="section-kicker">Daily briefing</div><h2>Today, grounded in your workspace.</h2><p>{briefing}</p></div><Link className="text-button" href="/command">Ask for detail <ArrowRight size={15} /></Link></section>
     <section className="metrics" aria-label="Today at a glance">{metrics.map(({ label, value, icon: Icon, tone }) => <article className="metric-card" key={label}><div className={`metric-icon ${tone}`}><Icon size={17} /></div><div><strong>{value}</strong><span>{label}</span></div></article>)}</section>
     <div className="dashboard-grid"><section className="panel schedule-panel"><header className="panel-header"><div><span className="section-kicker">Schedule</span><h2>Today</h2></div><Link className="quiet-button" href="/calendar">Open calendar</Link></header>{events.length ? <div className="dashboard-list">{events.map((event) => <article key={event.id}><time>{formatTime(event.startsAt)}</time><div><h3>{event.title}</h3><p>{event.location || `${formatTime(event.startsAt)}–${formatTime(event.endsAt)}`}</p></div></article>)}</div> : <EmptyState icon={<CalendarDays size={21} />} title="A clear calendar" body="There are no events scheduled for today." action="Create an event" href="/calendar" />}</section><section className="panel attention-panel"><header className="panel-header"><div><span className="section-kicker">Priority queue</span><h2>Needs attention</h2></div></header>{attention.length ? <div className="attention-list">{attention.map((item) => <Link href={item.href} key={`${item.detail}-${item.id}`}><span className={`attention-dot ${item.tone}`} /><div><h3>{item.title}</h3><p>{item.detail}</p></div><ArrowRight size={14} /></Link>)}</div> : <EmptyState icon={<Check size={21} />} title="Nothing is waiting" body="There are no overdue tasks, due follow-ups, important emails, or unread alerts." action="Create a task" href="/tasks" />}</section></div>
