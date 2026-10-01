@@ -12,7 +12,8 @@ const emailDeliveryEnabled = isBrevoConfigured();
 const thirtyDays = 60 * 60 * 24 * 30;
 
 async function sendAuthOTP(email: string, otp: string, type: "sign-in" | "email-verification" | "forget-password" | "change-email") {
-  await sendTransactionalEmail({ to: { email }, ...authOTPEmail(otp, type) });
+  const messageId = await sendTransactionalEmail({ to: { email }, ...authOTPEmail(otp, type) });
+  if (messageId) console.info("Brevo accepted an authentication email", { type, messageId });
 }
 
 export const auth = betterAuth({

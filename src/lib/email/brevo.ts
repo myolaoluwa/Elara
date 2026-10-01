@@ -12,6 +12,33 @@ export function isBrevoConfigured() {
   return Boolean(process.env.BREVO_API_KEY?.trim() && process.env.BREVO_SENDER_EMAIL?.trim());
 }
 
+async function brevoErrorDetails(response: Response) {
+  try {
+    const body: unknown = await response.json();
+    if (!body || typeof body !== "object") return "";
+
+    const details = body as { code?: unknown; message?: unknown };
+    const code = typeof details.code === "string" ? details.code : "";
+    const message = typeof details.message === "string"
+      ? details.message.replace(/[\r\n]+/g, " ").replace(/\b[^\s@]+@[^\s@]+\.[^\s@]+\b/g, "[email]").slice(0, 200)
+      : "";
+    return [code, message].filter(Boolean).join(": ");
+  } catch {
+    return "";
+  }
+}
+
+async function brevoMessageId(response: Response) {
+  try {
+    const body: unknown = await response.json();
+    if (!body || typeof body !== "object") return undefined;
+    const messageId = (body as { messageId?: unknown }).messageId;
+    return typeof messageId === "string" ? messageId : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function sendTransactionalEmail(message: TransactionalEmail) {
   const apiKey = process.env.BREVO_API_KEY?.trim();
   const senderEmail = process.env.BREVO_SENDER_EMAIL?.trim();
@@ -32,5 +59,10 @@ export async function sendTransactionalEmail(message: TransactionalEmail) {
     signal: AbortSignal.timeout(15_000),
   });
 
-  if (!response.ok) throw new Error(`Brevo rejected the email request with status ${response.status}`);
+  if (!response.ok) {
+    const details = await brevoErrorDetails(response);
+    throw new Error(`Brevo rejected the email request with status ${response.status}${details ? ` (${details})` : ""}`);
+  }
+
+  return brevoMessageId(response);
 }

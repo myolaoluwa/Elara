@@ -41,7 +41,7 @@ export function AuthForm({ mode, otpEnabled }: { mode: "sign-in" | "sign-up"; ot
 
       if (isSignUp && otpEnabled) {
         setChallenge({ type: "verify-email", email });
-        setNotice(`We sent a six-digit verification code to ${email}.`);
+        setNotice(`Check your email for a six-digit verification code. If it does not arrive, check spam or request a new code.`);
         return;
       }
 
@@ -53,7 +53,7 @@ export function AuthForm({ mode, otpEnabled }: { mode: "sign-in" | "sign-up"; ot
           return;
         }
         setChallenge({ type: "new-device", email });
-        setNotice(`This device needs verification. We sent a six-digit code to ${email}.`);
+        setNotice(`This device needs verification. Check your email for a six-digit code. If it does not arrive, check spam or request a new code.`);
         return;
       }
 
@@ -100,7 +100,7 @@ export function AuthForm({ mode, otpEnabled }: { mode: "sign-in" | "sign-up"; ot
         setError(result.error.message || "Unable to resend the verification code.");
         return;
       }
-      setNotice(`A new code was sent to ${challenge.email}.`);
+      setNotice(`A new code was requested for ${challenge.email}. Check spam if it does not arrive shortly.`);
     } catch {
       setError("Unable to resend the code. Check your connection and try again.");
     } finally {
