@@ -1,12 +1,17 @@
 "use client";
 
-import { ArrowUp, Bot, LoaderCircle, Sparkles, UserRound } from "lucide-react";
+import { ArrowUp, LoaderCircle, UserRound } from "lucide-react";
+import Image from "next/image";
 import { FormEvent, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 type Message = { role: "user" | "assistant"; content: string };
 const suggestions = ["What’s happening today?", "What tasks are overdue?", "What am I waiting for?", "What decisions have we recorded?"];
+
+function ElaraAvatar({ className = "" }: { className?: string }) {
+  return <span className={`elara-avatar ${className}`} aria-hidden="true"><Image src="/images/elara-avatar.png" alt="" width={96} height={96} /></span>;
+}
 
 export function CommandCenter({ initialConversationId = null, initialMessages = [], history = [] }: { initialConversationId?: string | null; initialMessages?: Message[]; history?: { id: string; title: string | null; updatedAt: string }[] }) {
   const [conversationId, setConversationId] = useState(initialConversationId);
@@ -48,9 +53,9 @@ export function CommandCenter({ initialConversationId = null, initialMessages = 
   return (
     <div className="command-layout">
       <section className="command-main panel">
-        <header className="command-header"><div className="briefing-mark"><Sparkles size={18} /></div><div><p className="eyebrow">Command center</p><h1>Ask Elara</h1><p>Answers stay grounded in your workspace.</p></div></header>
+        <header className="command-header"><ElaraAvatar className="header-avatar" /><div><p className="eyebrow">Command center</p><h1>Ask Elara</h1><p>Answers stay grounded in your workspace.</p></div></header>
         <div className="message-thread">
-          {messages.length === 0 ? <div className="command-welcome"><span><Bot size={27} /></span><h2>What should we get ahead of?</h2><p>Ask questions or create tasks, reminders, calendar events, meetings, follow-ups, contacts, projects, research, travel plans, and other workspace records.</p><div className="suggestion-grid">{suggestions.map((suggestion) => <button onClick={() => ask(suggestion)} key={suggestion}>{suggestion}</button>)}</div></div> : messages.map((message, index) => <article className={`chat-message ${message.role}`} key={`${message.role}-${index}`}><span>{message.role === "user" ? <UserRound size={15} /> : <Sparkles size={15} />}</span><div className="chat-content">{message.content ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown> : <LoaderCircle className="spin" size={16} />}</div></article>)}
+          {messages.length === 0 ? <div className="command-welcome"><ElaraAvatar className="welcome-avatar" /><h2>What should we get ahead of?</h2><p>Ask questions or create tasks, reminders, calendar events, meetings, follow-ups, contacts, projects, research, travel plans, and other workspace records.</p><div className="suggestion-grid">{suggestions.map((suggestion) => <button onClick={() => ask(suggestion)} key={suggestion}>{suggestion}</button>)}</div></div> : messages.map((message, index) => <article className={`chat-message ${message.role}`} key={`${message.role}-${index}`}>{message.role === "user" ? <span className="user-avatar"><UserRound size={15} /></span> : <ElaraAvatar className="message-avatar" />}<div className="chat-content">{message.content ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown> : <LoaderCircle className="spin" size={16} />}</div></article>)}
         </div>
         <form className="command-input" onSubmit={submit}><textarea name="prompt" required rows={1} placeholder="Ask about your workspace…" /><button disabled={pending} aria-label="Send"><ArrowUp size={17} /></button></form>
       </section>
