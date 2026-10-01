@@ -22,8 +22,10 @@ button { color: inherit; }
 .app-frame { min-height: 100vh; display: flex; }
 .sidebar { position: fixed; inset: 0 auto 0 0; z-index: 30; width: 242px; display: flex; flex-direction: column; padding: 27px 18px 18px; background: #f3f5f2; border-right: 1px solid var(--line); transition: transform .22s ease, visibility 0s; }
 .brand-row { display: flex; align-items: center; justify-content: space-between; padding: 0 8px 29px; }
-.brand { display: flex; align-items: center; gap: 11px; color: var(--ink); text-decoration: none; font-size: 13px; font-weight: 750; letter-spacing: .2em; }
-.brand-symbol { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 10px 10px 10px 3px; color: white; background: var(--green); font-family: var(--font-display), serif; font-size: 20px; font-weight: 400; letter-spacing: 0; }
+.brand, .brand > span { display: flex; align-items: center; gap: 11px; }
+.brand { color: var(--ink); text-decoration: none; font-size: 13px; font-weight: 750; letter-spacing: .2em; }
+.brand-symbol { display: grid; place-items: center; width: 33px; height: 33px; overflow: hidden; color: white; background: var(--green); border-radius: 10px; letter-spacing: 0; }
+.brand-symbol svg { width: 29px; height: 29px; }
 .sidebar-navigation { min-height: 0; flex: 1; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #c4cdc8 transparent; scrollbar-width: thin; }
 .nav-label { margin: 0 10px 8px; color: #929a96; font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
 .nav-label.second { margin-top: 25px; }
@@ -109,7 +111,8 @@ kbd { padding: 2px 6px; color: #8a928e; background: #fff; border: 1px solid #dfe
 .auth-page { min-height: 100vh; display: grid; grid-template-columns: minmax(420px, 1.05fr) minmax(480px, .95fr); background: #f8faf7; }
 .auth-story { min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: clamp(35px, 5vw, 76px); color: #edf6f1; background: linear-gradient(145deg, #183e33 0%, #235244 58%, #315f51 100%); }
 .auth-brand { color: white; width: max-content; }
-.auth-brand .brand-symbol { color: var(--green-dark); background: #eef5f1; }
+.auth-brand .brand-symbol { width: 36px; height: 36px; color: var(--green-dark); background: #eef5f1; }
+.auth-brand .brand-symbol svg { width: 32px; height: 32px; }
 .auth-story > div { max-width: 610px; padding: 70px 0; }
 .auth-orbit { width: 47px; height: 47px; display: grid; place-items: center; margin-bottom: 32px; color: #d1e5da; background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.12); border-radius: 15px 15px 15px 4px; }
 .auth-story .eyebrow { color: #aac8ba; }

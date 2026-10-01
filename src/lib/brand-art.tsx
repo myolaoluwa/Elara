@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { ElaraMark } from "@/components/elara-logo";
 
 const colors = {
   ink: "#17201d",
@@ -10,11 +11,11 @@ const colors = {
 };
 
 export function brandIcon(width: number, height: number) {
-  const inset = Math.round(width * 0.12);
+  const inset = Math.round(width * 0.07);
   return new ImageResponse(
     <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: colors.paper }}>
-      <div style={{ width: width - inset * 2, height: height - inset * 2, display: "flex", alignItems: "center", justifyContent: "center", color: "white", background: colors.green, borderRadius: `${Math.round(width * 0.25)}px ${Math.round(width * 0.25)}px ${Math.round(width * 0.25)}px ${Math.round(width * 0.07)}px`, fontFamily: "Georgia, serif", fontSize: Math.round(width * 0.58), lineHeight: 1 }}>
-        E
+      <div style={{ width: width - inset * 2, height: height - inset * 2, display: "flex", alignItems: "center", justifyContent: "center", color: "white", background: colors.green, borderRadius: Math.round(width * 0.24) }}>
+        <ElaraMark style={{ width: width * 0.72, height: height * 0.72 }} />
       </div>
     </div>,
     { width, height },
@@ -28,7 +29,7 @@ export function socialImage(width: number, height: number) {
       <div style={{ position: "absolute", right: 105, bottom: -235, width: 420, height: 420, display: "flex", background: colors.greenPale, borderRadius: "50%", opacity: 0.72 }} />
       <div style={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "70px 78px" }}>
         <div style={{ display: "flex", alignItems: "center" }}>
-          <div style={{ width: 66, height: 66, display: "flex", alignItems: "center", justifyContent: "center", color: "white", background: colors.green, borderRadius: "21px 21px 21px 6px", fontFamily: "Georgia, serif", fontSize: 43, lineHeight: 1 }}>E</div>
+          <div style={{ width: 70, height: 70, display: "flex", alignItems: "center", justifyContent: "center", color: "white", background: colors.green, borderRadius: 20 }}><ElaraMark style={{ width: 62, height: 62 }} /></div>
           <div style={{ marginLeft: 23, color: colors.ink, fontSize: 29, fontWeight: 700, letterSpacing: 7 }}>ELARA</div>
         </div>
         <div style={{ width: 900, display: "flex", flexDirection: "column" }}>

@@ -6,6 +6,7 @@ import { Bell, Menu, PanelLeftClose, PanelLeftOpen, Search, Sparkles, UserRound,
 import { useState, useSyncExternalStore } from "react";
 import { modules } from "@/lib/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
+import { ElaraBrand } from "@/components/elara-logo";
 
 const sidebarPreferenceEvent = "elara-sidebar-preference-change";
 let fallbackSidebarCollapsed = false;
@@ -48,7 +49,7 @@ export function AppShell({ children, workspaceName, userName }: { children: Reac
       {open && <button className="scrim" aria-label="Close navigation" onClick={() => setOpen(false)} />}
       <aside className={`sidebar ${open ? "is-open" : ""}`}>
         <div className="brand-row">
-          <Link href="/" className="brand"><span className="brand-symbol">E</span><span>ELARA</span></Link>
+          <Link href="/" className="brand"><ElaraBrand /></Link>
           <button className="mobile-close" aria-label="Close navigation" onClick={() => setOpen(false)}><X size={19} /></button>
         </div>
         <nav id="primary-navigation" className="sidebar-navigation" aria-label="Primary navigation">

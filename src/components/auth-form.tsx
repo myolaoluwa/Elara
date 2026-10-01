@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Eye, EyeOff, LoaderCircle, Sparkles } from "luci
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { ElaraBrand } from "@/components/elara-logo";
 
 type Challenge = { type: "verify-email" | "new-device"; email: string };
 
@@ -112,7 +113,7 @@ export function AuthForm({ mode, otpEnabled }: { mode: "sign-in" | "sign-up"; ot
   return (
     <main className="auth-page">
       <section className="auth-story">
-        <Link href="/sign-in" className="brand auth-brand"><span className="brand-symbol">E</span><span>ELARA</span></Link>
+        <Link href="/sign-in" className="brand auth-brand"><ElaraBrand /></Link>
         <div>
           <span className="auth-orbit"><Sparkles size={20} /></span>
           <p className="eyebrow">Executive operations, composed</p>
