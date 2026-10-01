@@ -1,7 +1,8 @@
-import { Activity, SlidersHorizontal, Brain, BriefcaseBusiness, CalendarDays, CheckSquare2, FileSearch, FileText, HandCoins, Inbox, LayoutDashboard, MapPinned, MessageSquareText, Search, Settings, ClipboardList, TicketCheck, Users, Video, Workflow, ReceiptText, WalletCards } from "lucide-react";
+import { Activity, SlidersHorizontal, Brain, BriefcaseBusiness, CalendarDays, CheckSquare2, FileSearch, FileText, HandCoins, Inbox, LayoutDashboard, MapPinned, MessageSquareText, Search, Settings, ClipboardList, TicketCheck, Users, Video, Workflow, ReceiptText, WalletCards, AlarmClock } from "lucide-react";
 
 export const modules = [
   { slug: "dashboard", label: "Dashboard", icon: LayoutDashboard, description: "A focused view of today’s executive operations.", emptyTitle: "Your day starts here", emptyBody: "Connect your work to create a grounded daily view.", action: null },
+  { slug: "alarms", label: "Alarms", icon: AlarmClock, description: "Set personal alarms and browser reminders that fire outside your task list.", emptyTitle: "No alarms set", emptyBody: "Create a one-off alarm or recurring reminder that can alert you from the web app.", action: "Set an alarm" },
   { slug: "command", label: "Command center", icon: MessageSquareText, description: "Ask questions and prepare actions using workspace context.", emptyTitle: "Ask with confidence", emptyBody: "Elara’s answers will be grounded in connected workspace data, with approval required before important actions.", action: "Start a conversation" },
   { slug: "inbox", label: "Inbox", icon: Inbox, description: "Prioritize communication and turn messages into action.", emptyTitle: "Bring the important messages closer", emptyBody: "Connect an email account to summarize threads, find deadlines, and draft replies for review.", action: "Connect email" },
   { slug: "calendar", label: "Calendar", icon: CalendarDays, description: "Coordinate the executive’s time with context and guardrails.", emptyTitle: "Connect a calendar", emptyBody: "Events, conflicts, preparation gaps, and scheduling preferences will appear here.", action: "Connect calendar" },
@@ -30,7 +31,7 @@ export function moduleBySlug(slug: string) {
 }
 
 export const navigationGroups = [
-  { label: "Workspace", slugs: ["dashboard", "command", "inbox", "calendar", "meetings", "tasks"] },
+  { label: "Workspace", slugs: ["dashboard", "alarms", "command", "inbox", "calendar", "meetings", "tasks"] },
   { label: "Operations", slugs: ["follow-ups", "contacts", "travel", "expenses", "expense-reports", "invoices", "vendors", "events"] },
   { label: "Knowledge", slugs: ["documents", "research", "briefings", "memory"] },
   { label: "Workspace controls", slugs: ["automations", "activity", "settings"] },

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, Menu, PanelLeftClose, PanelLeftOpen, Search, X } from "lucide-react";
+import { Bell, Download, Menu, PanelLeftClose, PanelLeftOpen, Search, X } from "lucide-react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { modules, navigationGroups } from "@/lib/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
@@ -31,13 +31,36 @@ function getServerSidebarPreference() {
   return false;
 }
 
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+};
+
 export function AppShell({ children, workspaceName, userName }: { children: React.ReactNode; workspaceName: string; userName: string }) {
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const sidebarRef = useRef<HTMLElement>(null);
   const collapsed = useSyncExternalStore(subscribeToSidebarPreference, getSidebarPreference, getServerSidebarPreference);
   const currentModule = modules.find(({ slug }) => slug === "dashboard" ? pathname === "/" : pathname === `/${slug}` || pathname.startsWith(`/${slug}/`));
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setInstallEvent(event as BeforeInstallPromptEvent);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    return () => window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+  }, []);
+
+  async function handleInstallClick() {
+    if (!installEvent) return;
+    installEvent.prompt();
+    await installEvent.userChoice;
+    setInstallEvent(null);
+  }
 
   useEffect(() => {
     function openSearch(event: KeyboardEvent) {
@@ -109,6 +132,7 @@ export function AppShell({ children, workspaceName, userName }: { children: Reac
           <span className="topbar-location">{currentModule?.label || "Workspace"}</span>
           <Link className="search-trigger" href="/search"><Search size={17} /><span>Search your workspace</span><kbd>⌘ K</kbd></Link>
           <div className="topbar-actions">
+            {installEvent ? <button type="button" className="quiet-button" onClick={handleInstallClick}><Download size={15} />Install app</button> : null}
             <Link className="ask-elara" href="/command" aria-label="Ask Elara"><ElaraMark className="assistant-mark" /><span>Ask Elara</span></Link>
             <Link className="icon-button" href="/activity" aria-label="Activity and notifications"><Bell size={18} /></Link>
             <Link className="user-avatar" href="/settings" aria-label={`${userName} profile settings`} title={userName}>{userName.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase()}</Link>
