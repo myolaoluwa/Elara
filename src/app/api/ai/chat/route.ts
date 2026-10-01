@@ -7,6 +7,8 @@ import { buildWorkspaceContext, groundedFallback } from "@/lib/ai/workspace-cont
 import { ELARA_AGENT_POLICY } from "@/lib/ai/agent-policy";
 import { runEmailAgent } from "@/lib/ai/email-agent";
 import { isEmailActionRequest } from "@/lib/ai/email-intent";
+import { runWorkspaceActionAgent } from "@/lib/ai/workspace-action-agent";
+import { isWorkspaceActionRequest } from "@/lib/ai/workspace-action-intent";
 import { RequestBodyError, enforceRateLimit, readJsonBody, rejectCrossOrigin, rejectReadOnlyRole } from "@/lib/http/security";
 
 const inputSchema = z.object({ prompt: z.string().trim().min(1).max(8000), conversationId: z.string().max(128).optional().nullable() });
@@ -37,7 +39,6 @@ export async function POST(request: Request) {
   conversation ??= await prisma.aIConversation.create({ data: { organizationId, title: parsed.data.prompt.slice(0, 80) } });
   await prisma.aIMessage.create({ data: { conversationId: conversation.id, role: "user", content: parsed.data.prompt } });
   const history = (await prisma.aIMessage.findMany({ where: { conversationId: conversation.id }, orderBy: { createdAt: "desc" }, take: 20 })).reverse();
-  const snapshot = await buildWorkspaceContext(organizationId);
   const providerSelection = getTextAIProvider();
   const encoder = new TextEncoder();
 
@@ -58,6 +59,33 @@ export async function POST(request: Request) {
       return new Response(message, { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store", "x-conversation-id": conversation.id } });
     }
   }
+
+  if (providerSelection.provider && isWorkspaceActionRequest(parsed.data.prompt)) {
+    try {
+      const result = await runWorkspaceActionAgent({
+        provider: providerSelection.provider,
+        organizationId,
+        user: authContext.user,
+        conversationId: conversation.id,
+        prompt: parsed.data.prompt,
+        history,
+      });
+      if (result) {
+        await prisma.$transaction([
+          prisma.aIMessage.create({ data: { conversationId: conversation.id, role: "assistant", content: result.text } }),
+          prisma.aIConversation.update({ where: { id: conversation.id }, data: { updatedAt: new Date() } }),
+          prisma.activityLog.create({ data: { organizationId, actorUserId: authContext.user.id, actorType: "ai", action: "ai.workspace-actions.processed", entityType: "ai-conversation", entityId: conversation.id, source: "command", resultJson: JSON.stringify({ completed: result.results.filter((item) => item.ok).length, failed: result.results.filter((item) => !item.ok).length }) } }),
+        ]);
+        return new Response(result.text, { headers: { "content-type": "text/plain; charset=utf-8", "x-content-type-options": "nosniff", "cache-control": "no-store", "x-conversation-id": conversation.id } });
+      }
+    } catch {
+      const message = "I couldn’t safely complete that workspace action. Please include the exact record, date, and time you want me to use.";
+      await prisma.aIMessage.create({ data: { conversationId: conversation.id, role: "assistant", content: message } });
+      return new Response(message, { headers: { "content-type": "text/plain; charset=utf-8", "x-content-type-options": "nosniff", "cache-control": "no-store", "x-conversation-id": conversation.id } });
+    }
+  }
+
+  const snapshot = await buildWorkspaceContext(organizationId);
 
   const body = new ReadableStream({
     async start(controller) {

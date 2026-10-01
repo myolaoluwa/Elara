@@ -2,6 +2,8 @@
 
 import { ArrowUp, Bot, LoaderCircle, Sparkles, UserRound } from "lucide-react";
 import { FormEvent, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type Message = { role: "user" | "assistant"; content: string };
 const suggestions = ["What’s happening today?", "What tasks are overdue?", "What am I waiting for?", "What decisions have we recorded?"];
@@ -48,7 +50,7 @@ export function CommandCenter({ initialConversationId = null, initialMessages = 
       <section className="command-main panel">
         <header className="command-header"><div className="briefing-mark"><Sparkles size={18} /></div><div><p className="eyebrow">Command center</p><h1>Ask Elara</h1><p>Answers stay grounded in your workspace.</p></div></header>
         <div className="message-thread">
-          {messages.length === 0 ? <div className="command-welcome"><span><Bot size={27} /></span><h2>What should we get ahead of?</h2><p>Ask about today, tasks, follow-ups, decisions, contacts, meetings, imported email, or documents.</p><div className="suggestion-grid">{suggestions.map((suggestion) => <button onClick={() => ask(suggestion)} key={suggestion}>{suggestion}</button>)}</div></div> : messages.map((message, index) => <article className={`chat-message ${message.role}`} key={`${message.role}-${index}`}><span>{message.role === "user" ? <UserRound size={15} /> : <Sparkles size={15} />}</span><p>{message.content || <LoaderCircle className="spin" size={16} />}</p></article>)}
+          {messages.length === 0 ? <div className="command-welcome"><span><Bot size={27} /></span><h2>What should we get ahead of?</h2><p>Ask questions or create tasks, reminders, calendar events, meetings, follow-ups, contacts, projects, research, travel plans, and other workspace records.</p><div className="suggestion-grid">{suggestions.map((suggestion) => <button onClick={() => ask(suggestion)} key={suggestion}>{suggestion}</button>)}</div></div> : messages.map((message, index) => <article className={`chat-message ${message.role}`} key={`${message.role}-${index}`}><span>{message.role === "user" ? <UserRound size={15} /> : <Sparkles size={15} />}</span><div className="chat-content">{message.content ? <ReactMarkdown remarkPlugins={[remarkGfm]}>{message.content}</ReactMarkdown> : <LoaderCircle className="spin" size={16} />}</div></article>)}
         </div>
         <form className="command-input" onSubmit={submit}><textarea name="prompt" required rows={1} placeholder="Ask about your workspace…" /><button disabled={pending} aria-label="Send"><ArrowUp size={17} /></button></form>
       </section>

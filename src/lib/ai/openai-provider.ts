@@ -12,7 +12,12 @@ export class OpenAIProvider implements StreamingAIProvider {
   }
 
   async complete(request: AIRequest): Promise<AIResponse> {
-    const response = await this.client.responses.create({ model: this.model, input: transcript(request.messages), max_output_tokens: 2_000 });
+    const response = await this.client.responses.create({
+      model: this.model,
+      input: transcript(request.messages),
+      max_output_tokens: 2_000,
+      ...(request.intent === "extract" ? { text: { format: { type: "json_object" as const } } } : {}),
+    });
     return { text: response.output_text, provider: this.name, model: this.model, toolCalls: [] };
   }
 

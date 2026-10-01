@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const text = (max = 3000) => z.string().trim().max(max).optional().nullable();
-const optionalDateTime = z.iso.datetime({ local: true }).optional().or(z.literal(""));
+const optionalDateTime = z.iso.datetime({ local: true, offset: true }).optional().or(z.literal(""));
 const money = z.coerce.number().finite().nonnegative().max(100_000_000);
 
 export const researchSchema = z.object({
@@ -21,8 +21,8 @@ export const briefingSchema = z.object({
 export const travelSchema = z.object({
   title: z.string().trim().min(2).max(180),
   destination: z.string().trim().min(2).max(180),
-  startsAt: z.iso.datetime({ local: true }),
-  endsAt: z.iso.datetime({ local: true }),
+  startsAt: z.iso.datetime({ local: true, offset: true }),
+  endsAt: z.iso.datetime({ local: true, offset: true }),
   timezone: z.string().trim().min(1).max(80).default("UTC"),
   purpose: text(1000),
   notes: text(5000),
@@ -68,8 +68,8 @@ export const eventSchema = z.object({
   title: z.string().trim().min(2).max(180),
   description: text(3000),
   venue: text(300),
-  startsAt: z.iso.datetime({ local: true }),
-  endsAt: z.iso.datetime({ local: true }),
+  startsAt: z.iso.datetime({ local: true, offset: true }),
+  endsAt: z.iso.datetime({ local: true, offset: true }),
   timezone: z.string().trim().min(1).max(80).default("UTC"),
   budget: money.optional(),
   currency: z.string().trim().length(3).transform((value) => value.toUpperCase()).default("USD"),

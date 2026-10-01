@@ -2,17 +2,28 @@ import { prisma } from "@/lib/prisma";
 
 export async function buildWorkspaceContext(organizationId: string) {
   const now = new Date();
-  const [tasks, events, meetings, followUps, contacts, emails, documents, projects, decisions, commitments] = await Promise.all([
-    prisma.task.findMany({ where: { organizationId }, select: { title: true, status: true, priority: true, dueAt: true, owner: { select: { name: true } } }, orderBy: { dueAt: "asc" }, take: 100 }),
-    prisma.calendarEvent.findMany({ where: { organizationId, endsAt: { gte: now } }, select: { title: true, startsAt: true, endsAt: true, location: true, timezone: true }, orderBy: { startsAt: "asc" }, take: 50 }),
-    prisma.meeting.findMany({ where: { organizationId }, select: { title: true, startsAt: true, status: true, agenda: true, notes: { select: { kind: true, content: true, confirmed: true } } }, orderBy: { startsAt: "desc" }, take: 30 }),
-    prisma.followUp.findMany({ where: { organizationId, status: { in: ["OPEN", "SNOOZED"] } }, select: { title: true, dueAt: true, notes: true, contact: { select: { name: true } } }, orderBy: { dueAt: "asc" }, take: 50 }),
-    prisma.contact.findMany({ where: { organizationId }, select: { name: true, role: true, relationship: true, notes: true, company: { select: { name: true } } }, take: 100 }),
+  const [tasks, events, meetings, followUps, contacts, emails, documents, projects, decisions, commitments, memories, notifications, research, briefings, travel, expenses, expenseReports, invoices, vendors, plannedEvents, automations] = await Promise.all([
+    prisma.task.findMany({ where: { organizationId }, select: { id: true, title: true, status: true, priority: true, dueAt: true, owner: { select: { name: true } } }, orderBy: { dueAt: "asc" }, take: 100 }),
+    prisma.calendarEvent.findMany({ where: { organizationId, endsAt: { gte: now } }, select: { id: true, title: true, startsAt: true, endsAt: true, location: true, timezone: true }, orderBy: { startsAt: "asc" }, take: 50 }),
+    prisma.meeting.findMany({ where: { organizationId }, select: { id: true, title: true, startsAt: true, endsAt: true, status: true, agenda: true, notes: { select: { kind: true, content: true, confirmed: true } } }, orderBy: { startsAt: "desc" }, take: 30 }),
+    prisma.followUp.findMany({ where: { organizationId, status: { in: ["OPEN", "SNOOZED"] } }, select: { id: true, title: true, dueAt: true, notes: true, contact: { select: { name: true } } }, orderBy: { dueAt: "asc" }, take: 50 }),
+    prisma.contact.findMany({ where: { organizationId }, select: { id: true, name: true, email: true, role: true, relationship: true, notes: true, company: { select: { name: true } } }, take: 100 }),
     prisma.email.findMany({ where: { organizationId }, select: { subject: true, sender: true, bodyText: true, receivedAt: true, isImportant: true }, orderBy: { receivedAt: "desc" }, take: 30 }),
     prisma.document.findMany({ where: { organizationId, status: "READY" }, select: { name: true, extractedText: true, tagsJson: true }, orderBy: { updatedAt: "desc" }, take: 20 }),
-    prisma.project.findMany({ where: { organizationId }, select: { name: true, status: true, description: true }, take: 50 }),
-    prisma.decision.findMany({ where: { organizationId }, select: { title: true, rationale: true, decidedAt: true, confirmed: true }, orderBy: { decidedAt: "desc" }, take: 50 }),
-    prisma.commitment.findMany({ where: { organizationId }, select: { description: true, dueAt: true, status: true, confirmed: true, contact: { select: { name: true } } }, take: 50 }),
+    prisma.project.findMany({ where: { organizationId }, select: { id: true, name: true, status: true, description: true }, take: 50 }),
+    prisma.decision.findMany({ where: { organizationId }, select: { id: true, title: true, rationale: true, decidedAt: true, confirmed: true }, orderBy: { decidedAt: "desc" }, take: 50 }),
+    prisma.commitment.findMany({ where: { organizationId }, select: { id: true, description: true, dueAt: true, status: true, confirmed: true, contact: { select: { name: true } } }, take: 50 }),
+    prisma.memoryItem.findMany({ where: { organizationId }, select: { id: true, category: true, title: true, content: true, confirmed: true, updatedAt: true }, orderBy: { updatedAt: "desc" }, take: 50 }),
+    prisma.notification.findMany({ where: { organizationId }, select: { id: true, title: true, body: true, priority: true, status: true, createdAt: true }, orderBy: { createdAt: "desc" }, take: 30 }),
+    prisma.researchReport.findMany({ where: { organizationId }, select: { id: true, topic: true, subjectType: true, summary: true, status: true, updatedAt: true }, orderBy: { updatedAt: "desc" }, take: 20 }),
+    prisma.briefing.findMany({ where: { organizationId }, select: { id: true, type: true, title: true, periodStart: true, periodEnd: true, confirmed: true }, orderBy: { createdAt: "desc" }, take: 20 }),
+    prisma.travelPlan.findMany({ where: { organizationId }, select: { id: true, title: true, destination: true, startsAt: true, endsAt: true, timezone: true, status: true, purpose: true }, orderBy: { startsAt: "desc" }, take: 20 }),
+    prisma.expense.findMany({ where: { organizationId }, select: { id: true, description: true, category: true, amountMinor: true, currency: true, incurredAt: true, status: true }, orderBy: { incurredAt: "desc" }, take: 30 }),
+    prisma.expenseReport.findMany({ where: { organizationId }, select: { id: true, title: true, periodStart: true, periodEnd: true, currency: true, status: true, notes: true }, orderBy: { createdAt: "desc" }, take: 20 }),
+    prisma.invoice.findMany({ where: { organizationId }, select: { id: true, invoiceNumber: true, description: true, amountMinor: true, currency: true, dueAt: true, status: true }, orderBy: { createdAt: "desc" }, take: 30 }),
+    prisma.vendor.findMany({ where: { organizationId }, select: { id: true, name: true, category: true, status: true, renewalAt: true, notes: true }, orderBy: { updatedAt: "desc" }, take: 30 }),
+    prisma.eventPlan.findMany({ where: { organizationId }, select: { id: true, title: true, venue: true, startsAt: true, endsAt: true, timezone: true, status: true }, orderBy: { startsAt: "desc" }, take: 20 }),
+    prisma.automation.findMany({ where: { organizationId }, select: { id: true, name: true, description: true, status: true, requiresApproval: true, triggerJson: true, actionsJson: true }, orderBy: { updatedAt: "desc" }, take: 20 }),
   ]);
 
   return {
@@ -31,6 +42,17 @@ export async function buildWorkspaceContext(organizationId: string) {
     projects: projects.map((project) => ({ ...project, description: clip(project.description, 2_000) })),
     decisions: decisions.map((decision) => ({ ...decision, rationale: clip(decision.rationale, 2_000) })),
     commitments,
+    memories: memories.map((item) => ({ ...item, content: clip(item.content, 2_000) || "" })),
+    notifications,
+    research: research.map((item) => ({ ...item, summary: clip(item.summary, 2_000) })),
+    briefings,
+    travel,
+    expenses,
+    expenseReports: expenseReports.map((item) => ({ ...item, notes: clip(item.notes, 1_000) })),
+    invoices,
+    vendors: vendors.map((item) => ({ ...item, notes: clip(item.notes, 1_000) })),
+    plannedEvents,
+    automations,
   };
 }
 

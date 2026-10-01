@@ -13,8 +13,8 @@ export const contactSchema = z.object({
 
 export const calendarEventSchema = z.object({
   title: z.string().trim().min(1).max(180),
-  startsAt: z.iso.datetime({ local: true }),
-  endsAt: z.iso.datetime({ local: true }),
+  startsAt: z.iso.datetime({ local: true, offset: true }),
+  endsAt: z.iso.datetime({ local: true, offset: true }),
   timezone: z.string().trim().min(1).max(80).default("UTC"),
   location: optionalText(300),
 }).refine((value) => new Date(value.endsAt) > new Date(value.startsAt), {
@@ -24,8 +24,8 @@ export const calendarEventSchema = z.object({
 
 export const meetingSchema = z.object({
   title: z.string().trim().min(1).max(180),
-  startsAt: z.iso.datetime({ local: true }),
-  endsAt: z.iso.datetime({ local: true }),
+  startsAt: z.iso.datetime({ local: true, offset: true }),
+  endsAt: z.iso.datetime({ local: true, offset: true }),
   location: optionalText(300),
   agenda: optionalText(5000),
   attendees: optionalText(2000).refine((value) => !value || value.split(",").filter((item) => item.trim()).length <= 50, "Use no more than 50 attendees"),
@@ -44,7 +44,7 @@ export const followUpSchema = z.object({
 export const emailSchema = z.object({
   subject: z.string().trim().min(1).max(300),
   sender: z.string().trim().min(1).max(240),
-  receivedAt: z.iso.datetime({ local: true }),
+  receivedAt: z.iso.datetime({ local: true, offset: true }),
   bodyText: z.string().trim().min(1).max(100_000),
   isImportant: z.boolean().default(false),
 });

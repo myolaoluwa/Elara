@@ -32,6 +32,7 @@ export class OpenAICompatibleProvider implements StreamingAIProvider {
       model: this.model,
       messages: compatibleMessages(request.messages),
       max_tokens: 2_000,
+      ...(request.intent === "extract" ? { response_format: { type: "json_object" as const } } : {}),
     });
 
     return {

@@ -7,6 +7,18 @@ describe("operation input schemas", () => {
     expect(result.success).toBe(false);
   });
 
+  it("accepts offset-aware calendar times without changing their instant", () => {
+    const event = calendarEventSchema.parse({
+      title: "Client call",
+      startsAt: "2026-10-02T13:00:00-07:00",
+      endsAt: "2026-10-02T13:15:00-07:00",
+      timezone: "America/Los_Angeles",
+    });
+
+    expect(event.startsAt).toBe("2026-10-02T13:00:00-07:00");
+    expect(event.endsAt).toBe("2026-10-02T13:15:00-07:00");
+  });
+
   it("accepts a minimally useful contact", () => {
     expect(contactSchema.parse({ name: "  John Adeyemi  ", email: "john@example.com" }).name).toBe("John Adeyemi");
   });
