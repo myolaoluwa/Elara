@@ -1,4 +1,4 @@
-import { Activity, SlidersHorizontal, Brain, BriefcaseBusiness, CalendarDays, CheckSquare2, FileSearch, FileText, HandCoins, Inbox, LayoutDashboard, MapPinned, MessageSquareText, Search, Settings, ClipboardList, TicketCheck, Users, Video, Workflow } from "lucide-react";
+import { Activity, SlidersHorizontal, Brain, BriefcaseBusiness, CalendarDays, CheckSquare2, FileSearch, FileText, HandCoins, Inbox, LayoutDashboard, MapPinned, MessageSquareText, Search, Settings, ClipboardList, TicketCheck, Users, Video, Workflow, ReceiptText, WalletCards } from "lucide-react";
 
 export const modules = [
   { slug: "dashboard", label: "Dashboard", icon: LayoutDashboard, description: "A focused view of today’s executive operations.", emptyTitle: "Your day starts here", emptyBody: "Connect your work to create a grounded daily view.", action: null },
@@ -14,6 +14,8 @@ export const modules = [
   { slug: "briefings", label: "Briefings", icon: ClipboardList, description: "Combine workspace context into focused daily, meeting, travel, and custom briefs.", emptyTitle: "No saved briefings", emptyBody: "Generate a briefing from current calendar, communication, documents, meetings, tasks, decisions, and research.", action: "Generate briefing" },
   { slug: "travel", label: "Travel", icon: MapPinned, description: "Coordinate itineraries, reservations, transport, documents, time zones, and reminders.", emptyTitle: "No travel plans", emptyBody: "Create a trip to begin assembling an executive travel pack.", action: "Plan a trip" },
   { slug: "expenses", label: "Expenses", icon: HandCoins, description: "Track receipts, extracted expenses, reports, reimbursements, and invoices.", emptyTitle: "No expenses yet", emptyBody: "Record an expense or upload a receipt in Documents and connect it to a report.", action: "Add expense" },
+  { slug: "expense-reports", label: "Expense reports", icon: WalletCards, description: "Group expenses into reviewable reports and keep reimbursement periods clear.", emptyTitle: "No expense reports yet", emptyBody: "Create a report, then organize expenses for review and reimbursement.", action: "Create report" },
+  { slug: "invoices", label: "Invoices", icon: ReceiptText, description: "Track invoice amounts, issue dates, deadlines, and payment status.", emptyTitle: "No invoices yet", emptyBody: "Add an invoice so due dates and payment obligations stay visible.", action: "Add invoice" },
   { slug: "vendors", label: "Vendors", icon: BriefcaseBusiness, description: "Manage vendor contacts, quotes, contracts, payments, renewals, and service history.", emptyTitle: "No vendors yet", emptyBody: "Add a vendor to keep commercial history and renewal obligations in one place.", action: "Add vendor" },
   { slug: "events", label: "Events", icon: TicketCheck, description: "Coordinate guests, RSVPs, invitations, venues, suppliers, travel, accommodation, and schedules.", emptyTitle: "No events yet", emptyBody: "Create an event plan and add its operational details.", action: "Plan an event" },
   { slug: "memory", label: "Memory", icon: Brain, description: "Keep projects, decisions, and commitments connected.", emptyTitle: "Memory starts with confirmed facts", emptyBody: "Add a project, decision, or commitment to make it available across Elara.", action: "Add memory" },
@@ -29,7 +31,7 @@ export function moduleBySlug(slug: string) {
 
 export const navigationGroups = [
   { label: "Workspace", slugs: ["dashboard", "command", "inbox", "calendar", "meetings", "tasks"] },
-  { label: "Operations", slugs: ["follow-ups", "contacts", "travel", "expenses", "vendors", "events"] },
+  { label: "Operations", slugs: ["follow-ups", "contacts", "travel", "expenses", "expense-reports", "invoices", "vendors", "events"] },
   { label: "Knowledge", slugs: ["documents", "research", "briefings", "memory"] },
   { label: "Workspace controls", slugs: ["automations", "activity", "settings"] },
 ] as const;

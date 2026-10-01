@@ -88,6 +88,21 @@ const v1PageConfigs: Partial<Record<V1Resource, { fields: CollectionField[] }>> 
     { name: "incurredAt", label: "Date", type: "date", required: true },
     { name: "reimbursable", label: "Reimbursable", type: "checkbox", defaultValue: true },
   ] },
+  "expense-reports": { fields: [
+    { name: "title", label: "Report title", type: "text", required: true, placeholder: "October client travel" },
+    { name: "periodStart", label: "Period starts", type: "date" },
+    { name: "periodEnd", label: "Period ends", type: "date" },
+    { name: "currency", label: "Currency", type: "text", required: true, defaultValue: "USD" },
+    { name: "notes", label: "Notes", type: "textarea", placeholder: "Purpose, approval context, or reimbursement details" },
+  ] },
+  invoices: { fields: [
+    { name: "invoiceNumber", label: "Invoice number", type: "text", required: true },
+    { name: "description", label: "Description", type: "textarea" },
+    { name: "amount", label: "Amount", type: "text", required: true, placeholder: "1250.00" },
+    { name: "currency", label: "Currency", type: "text", required: true, defaultValue: "USD" },
+    { name: "issuedAt", label: "Issued date", type: "date" },
+    { name: "dueAt", label: "Due date", type: "date" },
+  ] },
   vendors: { fields: [
     { name: "name", label: "Vendor name", type: "text", required: true },
     { name: "category", label: "Category", type: "text" },

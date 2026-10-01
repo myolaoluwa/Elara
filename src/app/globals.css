@@ -392,6 +392,10 @@ kbd { padding: 2px 6px; color: #8a928e; background: #fff; border: 1px solid #dfe
 .group-list article { padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: #f7f9f7; }
 .group-list article p, .group-list article span { margin-top: 4px; color: var(--muted); font-size: 9px; }
 .compose-actions { justify-content: flex-end; }
+.recipient-mode { display: inline-flex; width: fit-content; padding: 3px; background: #f0f4f0; border: 1px solid var(--line); border-radius: 8px; }
+.recipient-mode button { min-height: 34px; padding: 0 12px; color: var(--muted); background: transparent; border: 0; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.recipient-mode button.selected { color: var(--green-dark); background: white; box-shadow: 0 1px 3px rgba(27,45,38,.1); font-weight: 650; }
+.field-hint { color: var(--muted); font-size: 11px; font-weight: 400; line-height: 1.5; }
 .outbound-list { margin-bottom: 17px; overflow: hidden; }
 .outbound-list > header { display: flex; align-items: center; justify-content: space-between; padding: 19px 22px; border-bottom: 1px solid var(--line); }
 .outbound-list h2 { margin: 4px 0 0; font-family: var(--font-display), serif; font-size: 22px; font-weight: 400; }
@@ -399,7 +403,13 @@ kbd { padding: 2px 6px; color: #8a928e; background: #fff; border: 1px solid #dfe
 .outbound-list article:last-child { border-bottom: 0; }
 .outbound-list article strong { display: block; font-size: 11px; }
 .outbound-list article p { display: flex; align-items: center; gap: 4px; margin: 4px 0 0; color: var(--muted); font-size: 9px; }
-.outbound-list article > button { width: 30px; height: 30px; display: grid; place-items: center; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 7px; cursor: pointer; }
+.outbound-actions { display: flex; align-items: center; gap: 6px; }
+.outbound-actions button { min-height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 10px; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 7px; cursor: pointer; font-size: 11px; }
+.outbound-actions .send-draft-button { color: white; background: var(--green); border-color: var(--green); font-weight: 650; }
+.outbound-actions .send-draft-button:hover { background: var(--green-dark); }
+.outbound-actions .cancel-email-button { width: 34px; padding: 0; }
+.draft-result-actions { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.draft-result-actions p { margin: 10px 0 0; color: var(--muted); font-size: 11px; }
 .outbound-status { width: fit-content; padding: 4px 7px; color: var(--muted); background: #eef1ef; border-radius: 999px; font-size: 8px; font-weight: 750; text-transform: uppercase; }
 .outbound-status.sent { color: #286348; background: #e5f2eb; }
 .outbound-status.failed { color: #9c4842; background: #f7e9e7; }
