@@ -146,6 +146,10 @@ kbd { padding: 2px 6px; color: #8a928e; background: #fff; border: 1px solid #dfe
 .auth-resend { width: 100%; margin-top: 15px; }
 .auth-back:disabled, .auth-resend:disabled { opacity: .55; cursor: wait; }
 .form-error { margin: 0 0 13px; padding: 10px 12px; color: #833e39; background: #f7e9e7; border-radius: 8px; font-size: 11px; line-height: 1.4; }
+.button-row { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.badge.success { padding: 5px 8px; color: #286348; background: #e5f2eb; border: 1px solid #d1e8d9; border-radius: 6px; font-size: 11px; font-weight: 650; white-space: nowrap; }
+.form-success { margin: 0; padding: 10px 12px; color: #286348; background: #e5f2eb; border: 1px solid #d1e8d9; border-radius: 7px; font-size: 12px; }
+.form-hint { margin: -6px 0 0; color: var(--muted); font-size: 11px; }
 .spin { animation: spin .8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 

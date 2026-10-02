@@ -33,6 +33,24 @@ npm run email:dispatch
 
 Set `APP_URL` to the Vercel production URL, share the same `JOB_SECRET`, and set the cron schedule to `*/5 * * * *`. The process calls the authenticated job endpoint once and exits, as Railway cron services require.
 
+### Browser push reminders
+
+Generate a VAPID key pair with `npx web-push generate-vapid-keys`. Configure `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and a valid `VAPID_SUBJECT` (`mailto:` or HTTPS URL) on Vercel. The public key is returned only to authenticated app users; never expose the private key to the browser. Configure `JOB_SECRET` and `APP_URL` on the Railway worker as above.
+
+Create a second Railway cron service from the same repository with the start command:
+
+```bash
+npm run reminders:dispatch
+```
+
+Set its schedule to `* * * * *` (once per minute). It calls `POST /api/jobs/reminder-dispatch`, which claims due alarms in PostgreSQL and sends Web Push to each registered device. Delivery normally occurs within a minute, subject to the browser push service, network, device power, and OS notification settings. The dispatcher retries transient failures up to five times and removes expired subscriptions. Apply the database migration before deploying the app and worker:
+
+```bash
+npx prisma migrate deploy
+```
+
+Verify the live path from the Alarms page using **Enable notifications**, then **Send test push**. Schedule a near-future alarm and confirm delivery with the browser closed. The browser must support Web Push, permission must remain granted, and iOS/iPadOS requires adding the site to the Home Screen.
+
 ## Database deployment
 
 Prisma targets PostgreSQL. Apply committed migrations before a release:

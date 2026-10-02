@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "email:dispatch": "node scripts/dispatch-emails.mjs"
+    "email:dispatch": "node scripts/dispatch-emails.mjs",
+    "reminders:dispatch": "node scripts/dispatch-reminders.mjs"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "1.7.6",
@@ -24,6 +25,7 @@
     "react-dom": "19.2.4",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
+    "web-push": "^3.6.7",
     "zod": "4.6.5"
   },
   "devDependencies": {
@@ -31,6 +33,7 @@
     "@types/node": "^22.10.5",
     "@types/react": "^19.0.3",
     "@types/react-dom": "^19.0.2",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9.17.0",
     "eslint-config-next": "16.3.7",
     "prisma": "6.12.0",

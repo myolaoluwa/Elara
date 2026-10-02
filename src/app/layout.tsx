@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, Instrument_Serif } from "next/font/google";
 import { ReminderProvider } from "@/components/reminder-provider";
 import "./globals.css";
@@ -16,7 +16,6 @@ export const metadata: Metadata = {
   title: { default: "Elara", template: "%s · Elara" },
   description: "The intelligent workspace for executive operations.",
   manifest: "/manifest.webmanifest",
-  themeColor: "#111827",
   openGraph: {
     type: "website",
     siteName: "Elara",
@@ -28,6 +27,10 @@ export const metadata: Metadata = {
     title: "Elara · Executive operations, intelligently organized",
     description: "Prepare meetings, manage communication, coordinate travel, and keep every commitment moving.",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#111827",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

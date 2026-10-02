@@ -43,6 +43,8 @@ The authenticated EA can sync inbox messages, create provider drafts, send immed
 
 Scheduled mail is processed by `POST /api/jobs/email-dispatch`, protected by `JOB_SECRET`. The Railway service runs `npm run email:dispatch` on `*/5 * * * *`, calls the Vercel production URL, and exits. The same job refreshes connected Gmail inboxes.
 
+Browser alarms use server-scheduled Web Push, not browser timers. Configure `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and `VAPID_SUBJECT`, apply database migrations, and run a separate Railway cron service with `npm run reminders:dispatch` on `* * * * *`. Users enable a device from Alarms and can send a test push before scheduling alarms. See `docs/railway.md` for setup and browser delivery limitations.
+
 The internal assistant contract is documented in `src/lib/ai/AGENT.md`. Explicit send or schedule instructions may execute. Ambiguous, incomplete, or sensitive communications remain drafts for human review, and all outcomes are tenant-scoped and audited.
 
 ## Checks
