@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "email:dispatch": "node scripts/dispatch-emails.mjs",
-    "reminders:dispatch": "node scripts/dispatch-reminders.mjs"
+    "reminders:dispatch": "node scripts/dispatch-reminders.mjs",
+    "reminders:worker": "node scripts/reminder-worker.mjs"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "1.7.6",
